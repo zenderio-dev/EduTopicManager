@@ -1,0 +1,75 @@
+@use "_variables.scss" as *;
+.sidebar{
+    transition: all 0.2s ease-in-out;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: $colorObjects;
+    height: 100vh;
+    width: $sidebarWidth;
+    padding:10px 15px;
+    z-index: 1000;
+    .header{
+        
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        
+    }
+    .sidebarContainer{
+        height: 100%;
+        position: relative;
+        .hamburgerHeader{
+            position: absolute;
+            top: 15px;
+            left: $paddingMobile;
+        }
+        .logoLink{
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+           
+            text-decoration: none;
+        }
+        
+        .navList{
+            margin-top: 40%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            font-size: 1.2rem;
+            .link{
+                display: flex;
+                align-items: center;
+                padding: 0px 7%;
+                width: 100%;
+                height: 45px;
+                margin: 0 auto;
+                border-radius: 7px;
+                transition: all 0.2s ;
+                &:hover{
+                    
+                    background-color: $bgColor;
+                }
+                
+            }
+            .activeLink{
+                background-color: $mainColor !important;
+                color: white;
+            }
+
+            
+        }
+    }
+}
+.sidebarClose{
+    transform: translateX(-100%);
+}
+
+.hamburgerHeader{
+    position: fixed;
+    top: 15px;
+    left: $paddingMobile;
+}

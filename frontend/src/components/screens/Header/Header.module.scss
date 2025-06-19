@@ -1,0 +1,13 @@
+@use "_variables.scss" as *;
+.header{
+    padding: 10px 10% 10px 30px;
+    background-color: $colorObjects;
+    .headerContainer{
+        
+        
+        display: flex;
+        justify-content: right;
+        
+        
+    }
+}

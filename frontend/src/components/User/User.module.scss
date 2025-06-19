@@ -1,0 +1,23 @@
+.user{
+
+    display: flex;
+    gap:10px;
+    align-items: center;
+    .avatar{
+        width: 2.7rem;
+        height: 2.7rem;
+        background-color: gray;
+        border-radius: 50%;
+        
+        
+    }
+   
+    .userContainer{
+        font-size: 1.3rem;
+    }
+    .role{
+        font-size: 0.9rem;
+        opacity: 0.8;
+        color: gray;
+    }
+}

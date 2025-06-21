@@ -1,7 +1,7 @@
 import MyInput from '@/components/ui/MyInput/MyInput';
 import styles from './page.module.scss';
 import Link from 'next/link';
-import MyBtn from '@/components/ui/MyBtn/MyBtn';
+import MyBtnLogin from '@/components/ui/MyBtnLogin/MyBtnLogin';
 
 const page = () => {
   return (
@@ -13,7 +13,7 @@ const page = () => {
                 <MyInput label={'Пароль'} type={'password'}/>
             </div>
             <Link className={styles.forgot} href={'#'}>Забыли логин или пароль?</Link>
-            <MyBtn/>
+            <MyBtnLogin> Войти </MyBtnLogin>
         </form>
     </main>
   )

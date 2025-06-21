@@ -1,0 +1,14 @@
+@use '_variables.scss' as *;
+.myBtn{
+    width: 100%;
+    padding: 10px 0px;
+    color: white;
+    font-size: 1.3rem;
+    border-radius: 20px;
+    margin-top: 40px;
+    background-color: $mainColor;
+    transition: all 0.2s;
+    &:hover{
+        opacity: 0.7;
+    }
+}

@@ -1,12 +1,14 @@
 from rest_framework import viewsets
+from django_filters.rest_framework import DjangoFilterBackend
 from users.models import User, StudentProfile, TeacherProfile
-from topics.models import Group, Topic, StudentTopicChoice
+from topics.models import Topic, StudentTopicChoice
 from .serializers import (
     UserSerializer, StudentProfileSerializer, TeacherProfileSerializer,
-    GroupSerializer, TopicSerializer, StudentTopicChoiceSerializer,
-    StudentTopicChoiceWriteSerializer
+    TopicSerializer, StudentTopicChoiceSerializer,
+    StudentTopicChoiceWriteSerializer,
 )
 from .permissions import IsAdminUserRole, IsTeacherUserRole, IsStudentUserRole, IsSelfOrAdmin
+from .filters import TopicFilter
 
 # --- USER ---
 class UserViewSet(viewsets.ModelViewSet):
@@ -26,17 +28,13 @@ class TeacherProfileViewSet(viewsets.ModelViewSet):
     serializer_class = TeacherProfileSerializer
     permission_classes = [IsTeacherUserRole | IsAdminUserRole]
 
-# --- GROUP ---
-class GroupViewSet(viewsets.ModelViewSet):
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-    permission_classes = [IsTeacherUserRole | IsAdminUserRole]
-
 # --- TOPIC ---
 class TopicViewSet(viewsets.ModelViewSet):
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
     permission_classes = [IsTeacherUserRole | IsAdminUserRole]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TopicFilter
 
 # --- STUDENT TOPIC CHOICE ---
 class StudentTopicChoiceViewSet(viewsets.ModelViewSet):

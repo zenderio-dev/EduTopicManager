@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Topic, StudentTopicChoice
+from django.utils.translation import gettext_lazy as _
 
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
@@ -16,5 +17,5 @@ class StudentTopicChoiceAdmin(admin.ModelAdmin):
 
     def confirm_selected(self, request, queryset):
         updated = queryset.update(confirmed_by_teacher=True)
-        self.message_user(request, f'Подтверждено {updated} выборов темы.')
-    confirm_selected.short_description = 'Подтвердить выбор темы'
+        self.message_user(request, _(f'Подтверждено {updated} выборов темы.'))
+    confirm_selected.short_description = _('Подтвердить выбор темы')

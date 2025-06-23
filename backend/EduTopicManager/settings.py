@@ -101,7 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
@@ -141,6 +141,7 @@ DJOSER = {
     'HIDE_USERS': False,
     'USER_CREATE_PASSWORD_RETYPE': True,
     'PERMISSIONS': {
+        'user_create': ['rest_framework.permissions.IsAdminUser'],
         'user_list': ['rest_framework.permissions.IsAdminUser'],
         'user_detail': ['rest_framework.permissions.IsAuthenticated'],
         'current_user': ['rest_framework.permissions.IsAuthenticated'],
@@ -151,6 +152,7 @@ DJOSER = {
         'current_user': 'api.serializers.UserSerializer',
     },
 }
+
 
 
 

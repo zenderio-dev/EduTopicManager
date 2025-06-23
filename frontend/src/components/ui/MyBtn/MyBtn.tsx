@@ -1,12 +1,16 @@
 import clsx from 'clsx';
 import styles from './MyBtn.module.scss';
-
-const MyBtn = ({className}:{className?:React.ReactNode}) => {
-  return (
-    <button className={clsx(styles.myBtn, className)}>
-        Войти
-    </button>
-  )
+interface MyBtnProps {
+    className?: string;
+    onClick?: () => void;
+    children?: React.ReactNode;
+}
+const MyBtn = ({className, onClick, children}:MyBtnProps) => {
+    return (
+        <button className={clsx(styles.myBtn, className)} onClick={onClick}>
+            {children}
+        </button>
+    )
 }
 
-export default MyBtn
+export default MyBtn;

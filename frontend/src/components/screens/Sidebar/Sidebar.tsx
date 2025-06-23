@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useWidthScreen } from "@/shared/hooks/useWidthScreen";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
+import MyLink from "@/components/ui/MyLink/MyLink";
 
 interface Props {
   nav: {
@@ -71,9 +72,7 @@ const Sidebar = ({ nav }: Props) => {
                 console.log(item.href, pathName);
               return(
                 <li key={index}>
-                  <Link className={clsx(styles.link, {[styles.activeLink]:pathName===item.href})} href={item.href}>
-                    {item.name}
-                  </Link>
+                  <MyLink isActive={item.href===pathName} href={item.href}>{item.name}</MyLink>
                 </li>
               )})}
             </ul>

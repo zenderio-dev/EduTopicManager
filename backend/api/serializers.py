@@ -22,7 +22,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'username', 'email', 'password', 're_password',
-            'role', 'first_name', 'last_name', 'middle_name', 'course'
+            'role', 'first_name', 'last_name', 'middle_name', 'course', 'group_name'
         ]
 
     def validate(self, data):
@@ -41,16 +41,23 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         course = validated_data.pop('course', None)
+        group_name = validated_data.pop('group_name', None)  # Удаляем group_name из validated_data
         validated_data.pop('re_password', None)
         password = validated_data.pop('password')
 
+        # Убедитесь, что username передается только один раз
+        username = validated_data.pop('username')  # Извлекаем username отдельно
+        email = validated_data.pop('email', None)  # Извлекаем email отдельно
+
         user = User.objects.create_user(
+            username=username,  # Передаем username
+            email=email,  # Передаем email
             password=password,
-            **validated_data
+            **validated_data  # Передаем остальные поля
         )
 
         if user.role == 'student' and course:
-            StudentProfile.objects.create(user=user, course=course)
+            StudentProfile.objects.create(user=user, course=course, group_name=group_name)  # Передаем group_name только для студентов
         elif user.role == 'teacher':
             TeacherProfile.objects.create(user=user)
         elif user.role == 'admin':

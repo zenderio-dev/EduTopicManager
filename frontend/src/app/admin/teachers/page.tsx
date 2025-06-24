@@ -1,7 +1,11 @@
-import styes from './page.module.css';
+
+import CardTopic from '@/components/ui/CardTopic/CardTopic';
+import styles from './page.module.css';
 const page = () => {
   return (
-    <div></div>
+    <div>
+      <CardTopic></CardTopic>
+    </div>
   )
 }
 

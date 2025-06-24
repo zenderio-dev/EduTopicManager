@@ -1,0 +1,21 @@
+@use '_variables.scss' as *;
+.modalContainer{
+    margin-top: 30px;
+    gap: 20px;
+    .user{
+        font-size: 1.3rem;
+        margin-top: 20px;
+    }
+    .deleteText{
+        font-size: 1.4rem;
+    }
+    
+}
+.btnContainer{
+    display: flex;
+    gap: 15px;
+    justify-self: end;
+    .deleteBtn{
+        background-color: $deleteAction;
+    }
+}

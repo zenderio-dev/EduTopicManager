@@ -1,0 +1,17 @@
+.dropListContainer{
+    position: relative;
+      &.activeZ {
+    z-index: 999;
+  }
+
+    .btnDropList{
+        width: max-content;
+    }
+    .dropList{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        transform: translateY(100%);
+    }
+    
+}

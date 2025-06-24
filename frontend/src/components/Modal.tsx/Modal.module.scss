@@ -1,0 +1,53 @@
+@use '_variables.scss' as *;
+.modalContainer{
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 100vw;
+
+    background-color: rgba($color: #888888, $alpha: 0.3);
+    z-index: 1000000000;
+
+    .modal{
+        padding: 15px;
+        background-color: white;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+        position: fixed;
+        left: 50%;
+        
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 100000;
+        .modalHeader{
+            padding: 10px 0px;
+            border-bottom: 1px solid rgba($color: #929292, $alpha: 0.5);
+        }
+        .headerContainer{
+            display: flex;
+            justify-content: space-between;
+            
+            align-items: center;
+            .name{
+                font-size: 1.3rem;
+                font-weight: 600;
+            }
+            .buttonClose{
+                transition: all 0.2s;
+                &:hover{
+                    opacity: 0.6;
+                }
+            }
+        }
+        .modalMain{
+            padding: 0px $paddingMobile;
+        }
+        .modalFooter{
+            padding: 10px $paddingMobile;
+            margin-top: 6%;
+
+        }
+    
+    }
+}

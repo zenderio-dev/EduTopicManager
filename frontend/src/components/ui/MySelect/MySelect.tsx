@@ -1,0 +1,54 @@
+"use client";
+
+import { useState, useRef } from "react";
+import DropList from "../DropList/DropList";
+import styles from "./MySelectForm.module.scss";
+import clsx from "clsx";
+
+export type DropItem = { name: string | number; icon?: React.ReactNode };
+
+interface MySelectFormProps {
+  label: string;
+  value?: string | number;
+  options: DropItem[];
+  onChange: (value: string | number) => void;
+  error?: string;
+  className?: string;
+}
+
+const MySelectForm = ({
+  label,
+  value,
+  options,
+  onChange,
+  error,
+  className,
+}: MySelectFormProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const current = options.find((opt) => opt.name === value);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <div className={clsx(styles.selectContainer, className)} ref={containerRef}>
+      <label className={styles.label}>{label}</label>
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className={clsx(styles.selectButton, error && styles.errorBorder)}
+      >
+        {current?.name || "Выберите"}
+      </button>
+
+      <DropList
+        elems={options}
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onSelect={(item) => onChange(item.name)}
+      />
+
+      {error && <div className={styles.error}>{error}</div>}
+    </div>
+  );
+};
+
+export default MySelectForm;

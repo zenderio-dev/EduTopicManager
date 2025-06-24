@@ -1,22 +1,15 @@
-import MyInput from '@/components/ui/MyInput/MyInput';
-import styles from './page.module.scss';
-import Link from 'next/link';
-import MyBtnLogin from '@/components/ui/MyBtnLogin/MyBtnLogin';
+import MyInput from "@/components/ui/MyInputLogin/MyInputLogin";
+import styles from "./page.module.scss";
+import Link from "next/link";
+import MyBtnLogin from "@/components/ui/MyBtn/MyBtn";
+import Login from "@/components/Login/Login";
 
 const page = () => {
   return (
     <main className={styles.main}>
-        <form className={styles.loginForm}>
-            <h1>Добро пожаловать</h1>
-            <div className={styles.inputContainer}>
-                <MyInput label={'Логин'} type='text'/>
-                <MyInput label={'Пароль'} type={'password'}/>
-            </div>
-            <Link className={styles.forgot} href={'#'}>Забыли логин или пароль?</Link>
-            <MyBtnLogin> Войти </MyBtnLogin>
-        </form>
+      <Login />
     </main>
-  )
-}
+  );
+};
 
-export default page
+export default page;

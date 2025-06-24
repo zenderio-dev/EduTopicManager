@@ -1,23 +1,30 @@
-'use client';
-import clsx from 'clsx';
-import styles from './User.module.scss';
-import DropList from '../ui/DropList/DropList';
-import { useState } from 'react';
-const User = ({className}:{className?:React.ReactNode}) => {
-  const [isOpen, setIsopen] = useState<boolean>(false)
-  function openDropList() {
-    setIsopen(!isOpen);
-  }
+
+import clsx from "clsx";
+import styles from "./User.module.scss";
+import { formatName } from "@/utils";
+
+
+interface TypeProps{
+  className?:React.ReactNode,
+  user:AdminType|StudentType|TeacherType
+}
+const showRoles = {
+  admin:'Администратор',
+  student:'Студент',
+  teacher:'Преподаватель'
+}
+const User = ({ className, user }: TypeProps) => {
   return (
-    <button onClick={openDropList} className={clsx(styles.user,className)}>
+    <div className={styles.userContainer}>
+      <button  className={clsx(styles.user, className)}>
         <div className={styles.avatar}></div>
         <div className={styles.userContainer}>
-            <div className={styles.name}>Клименко Лев</div>
-            <div className={styles.role}>Администратор</div>
+          <div className={styles.name}>{formatName(user.fullName, 'FLName')}</div>
+          <div className={styles.role}>{showRoles[user.role]}</div>
         </div>
-        <DropList isOpen={isOpen} className={styles.dropList} elems={[{name:'Профиль', action:openDropList}, {name: 'Редактирование элементов пользователя', action:openDropList},{name:'установка ограничений',action:openDropList}] }/>
-    </button>
-  )
-}
+      </button>
+    </div>
+  );
+};
 
-export default User
+export default User;

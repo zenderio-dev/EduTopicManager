@@ -1,0 +1,16 @@
+@use '_variables.scss' as *;
+.myBtn{
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 7px;
+    transition: all 0.2s;
+    font-size: 1.2rem;
+    &:hover{
+        
+        background-color: $bgColor;
+    }
+    
+}

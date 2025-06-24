@@ -25,7 +25,6 @@ const LoginForm = ({
   isLoading,
   clearErrors,
 }: Props) => {
-  
   return (
     <form className={styles.loginForm} onSubmit={onSubmit}>
       <h1>Добро пожаловать</h1>
@@ -42,7 +41,6 @@ const LoginForm = ({
             render={({ field, fieldState }) => (
               <MyInputLogin
                 {...field}
-                
                 label="Логин"
                 type="text"
                 error={fieldState.error?.message}
@@ -67,7 +65,7 @@ const LoginForm = ({
               <MyInputLogin
                 {...field}
                 label="Пароль"
-                type='password'
+                type="password"
                 error={fieldState.error?.message}
                 onChange={(e) => {
                   field.onChange(e);
@@ -79,12 +77,11 @@ const LoginForm = ({
         </div>
       </div>
 
-      {errors.non_field_errors && (
+      {errors.non_field_errors?.message && (
         <div className={styles.nonFieldError}>
-          {errors.non_field_errors.message}
+          {String(errors.non_field_errors.message)}
         </div>
       )}
-
       <Link className={styles.forgot} href="#">
         Забыли логин или пароль?
       </Link>

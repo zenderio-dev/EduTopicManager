@@ -1,19 +1,17 @@
 "use client";
-import { useRef } from "react";
 import {
   useForm,
   SubmitHandler,
   useFormState,
-  FieldError,
+
 } from "react-hook-form";
 import { useLoginMutation } from "@/services/auth/userApi";
 import { setAuthToken } from "@/utils/auth";
 import LoginForm from "./LoginForm";
 
 interface FormValues extends FullStudentType{
-non_field_errors?:FieldError
-}
 
+}
 const Login = () => {
   const { control, handleSubmit, setError, clearErrors } = useForm<FormValues>({
     defaultValues: {
@@ -49,7 +47,6 @@ const Login = () => {
       errors={errors}
       onSubmit={handleSubmit(onSubmit)}
       isLoading={isLoading}
-      
       clearErrors={clearErrors}
     />
   );

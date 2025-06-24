@@ -1,9 +1,6 @@
 "use client";
-import Modal from "@/components/Modal.tsx/Modal";
-import styles from "./ModalCreateStudent.module.scss";
-import MyInputForm from "@/components/ui/MyInputForm/MyInputForm";
 import { useForm, useFormState } from "react-hook-form";
-import { error } from "console";
+import CreateStudentForm from "./CreateStudentForm";
 
 interface ModalDeleteProps {
   isOpen: boolean;
@@ -14,10 +11,10 @@ interface FormValues extends FullStudentType {
   confirmPassword: string;
 }
 
-const courseOptions = [{ name: 1 }, { name: 2 }, { name: 3 }, { name: 4 }];
+
 
 const ModalCreateStudent = ({ isOpen, onClose }: ModalDeleteProps) => {
-  const { control, handleSubmit, setError } = useForm<FormValues>({
+  const { control, handleSubmit, setError, } = useForm<FormValues>({
     defaultValues: {
       username: "",
       password: "",
@@ -33,15 +30,18 @@ const ModalCreateStudent = ({ isOpen, onClose }: ModalDeleteProps) => {
 
   const { errors } = useFormState<FormValues>({ control });
 
-  const onSubmit = (data: FormValues) => {
-  }
+  const onSubmit = (data: FormValues) => {};
 
-
-   return (
-    <Modal isOpen={isOpen} onClose={onClose} name="Создать студента">
-      <ModalCreateStudent  />
-    </Modal>
-  );  
+  return (
+    <CreateStudentForm
+      isOpen={isOpen}
+      onClose={onClose}
+      errors={errors}
+      control={control}
+      onSubmit={handleSubmit(onSubmit)}
+      
+    />
+  );
 };
 
 export default ModalCreateStudent;

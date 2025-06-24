@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import DropList from "../DropList/DropList";
-import styles from "./MySelectForm.module.scss";
+import styles from "./MySelect.module.scss";
 import clsx from "clsx";
 
 export type DropItem = { name: string | number; icon?: React.ReactNode };

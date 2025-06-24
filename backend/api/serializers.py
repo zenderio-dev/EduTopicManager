@@ -14,38 +14,49 @@ class UserCreateSerializer(serializers.ModelSerializer):
     middle_name = serializers.CharField(required=True)
     course = serializers.IntegerField(required=False, min_value=1, max_value=6)
 
+    password = serializers.CharField(write_only=True, required=True, min_length=8)
+    re_password = serializers.CharField(write_only=True, required=True, min_length=8)
+
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email', 'password',
+            'id', 'username', 'email', 'password', 're_password',
             'role', 'first_name', 'last_name', 'middle_name', 'course'
         ]
-        extra_kwargs = {'password': {'write_only': True}}
 
     def validate(self, data):
         role = data.get('role')
         course = data.get('course')
+        password = data.get('password')
+        re_password = data.get('re_password')
 
         if role == 'student' and course is None:
             raise serializers.ValidationError({'course': 'Для студентов необходимо указать курс.'})
+
+        if password != re_password:
+            raise serializers.ValidationError({'re_password': 'Пароли не совпадают.'})
+
         return data
 
     def create(self, validated_data):
         course = validated_data.pop('course', None)
+        validated_data.pop('re_password', None)
         password = validated_data.pop('password')
-        user = User(**validated_data)
-        user.set_password(password)
-        user.save()
+
+        user = User.objects.create_user(
+            password=password,
+            **validated_data
+        )
 
         if user.role == 'student' and course:
             StudentProfile.objects.create(user=user, course=course)
         elif user.role == 'teacher':
             TeacherProfile.objects.create(user=user)
         elif user.role == 'admin':
-            # Если нужны отдельные профили для админа — можно добавить. Пока просто создаём User.
             pass
 
         return user
+
 
 class StudentProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer()

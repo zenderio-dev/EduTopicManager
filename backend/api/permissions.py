@@ -5,7 +5,8 @@ class IsAdminUserRole(permissions.BasePermission):
     Пользователь с ролью admin (не Django superuser)
     """
     def has_permission(self, request, view):
-        return bool(request.user.is_authenticated and request.user.role == 'admin')
+        user = request.user
+        return bool(request.user.is_authenticated and (user.is_superuser or user.role == 'admin'))
 
 class IsTeacherUserRole(permissions.BasePermission):
     """

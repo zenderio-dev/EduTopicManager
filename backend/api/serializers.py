@@ -2,16 +2,15 @@ from rest_framework import serializers
 from users.models import User, StudentProfile, TeacherProfile
 from topics.models import Topic, StudentTopicChoice
 
+
 # --- USER SERIALIZERS ---
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'role', 'is_active']
+        fields = ['id', 'username', 'email', 'role', 'is_active', 'first_name', 'last_name', 'middle_name']
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    first_name = serializers.CharField(required=True)
-    last_name = serializers.CharField(required=True)
-    middle_name = serializers.CharField(required=True)
+    fullname = serializers.CharField(write_only=True, required=True, help_text="ФИО в формате 'Фамилия Имя Отчество'")
     course = serializers.IntegerField(required=False, min_value=1, max_value=6)
     group_name = serializers.CharField(required=False, allow_blank=False, max_length=100)
 
@@ -22,56 +21,94 @@ class UserCreateSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'username', 'email', 'password', 're_password',
-            'role', 'first_name', 'last_name', 'middle_name', 'course', 'group_name'
+            'role', 'fullname', 'course', 'group_name'
         ]
+        extra_kwargs = {
+            'first_name': {'read_only': True},
+            'last_name': {'read_only': True},
+            'middle_name': {'read_only': True}
+        }
 
     def validate(self, data):
-        role = data.get('role')
-        course = data.get('course')
-        password = data.get('password')
-        re_password = data.get('re_password')
+        # Проверка паролей
+        if data['password'] != data['re_password']:
+            raise serializers.ValidationError({'re_password': 'Пароли не совпадают.'})
 
-        if role == 'student' and course is None:
+        # Проверка для студентов
+        if data.get('role') == 'student' and not data.get('course'):
             raise serializers.ValidationError({'course': 'Для студентов необходимо указать курс.'})
 
-        if password != re_password:
-            raise serializers.ValidationError({'re_password': 'Пароли не совпадают.'})
+        # Проверка формата ФИО
+        fullname_parts = data['fullname'].strip().split()
+        if len(fullname_parts) < 2:
+            raise serializers.ValidationError({'fullname': 'Укажите Фамилию и Имя (обязательно) и Отчество (по желанию)'})
 
         return data
 
     def create(self, validated_data):
-        course = validated_data.pop('course', None)
-        group_name = validated_data.pop('group_name', None)  # Удаляем group_name из validated_data
-        validated_data.pop('re_password', None)
-        password = validated_data.pop('password')
+        # Извлекаем и обрабатываем ФИО
+        fullname = validated_data.pop('fullname')
+        name_parts = fullname.strip().split()
 
-        # Убедитесь, что username передается только один раз
-        username = validated_data.pop('username')  # Извлекаем username отдельно
-        email = validated_data.pop('email', None)  # Извлекаем email отдельно
+        last_name = name_parts[0]
+        first_name = name_parts[1]
+        middle_name = ' '.join(name_parts[2:]) if len(name_parts) > 2 else ''
 
+        # Подготовка данных для создания пользователя
+        validated_data.update({
+            'last_name': last_name,
+            'first_name': first_name,
+            'middle_name': middle_name
+        })
+
+        # Создаем пользователя
         user = User.objects.create_user(
-            username=username,  # Передаем username
-            email=email,  # Передаем email
-            password=password,
-            **validated_data  # Передаем остальные поля
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password'],
+            first_name=first_name,
+            last_name=last_name,
+            middle_name=middle_name,
+            role=validated_data['role']
         )
 
-        if user.role == 'student' and course:
-            StudentProfile.objects.create(user=user, course=course, group_name=group_name)  # Передаем group_name только для студентов
+        # Создаем профиль
+        if user.role == 'student':
+            StudentProfile.objects.create(
+                user=user,
+                course=validated_data.get('course'),
+                group_name=validated_data.get('group_name', '')
+            )
         elif user.role == 'teacher':
             TeacherProfile.objects.create(user=user)
-        elif user.role == 'admin':
-            pass
 
         return user
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['fullname'] = instance.get_full_name()
+        if hasattr(instance, 'student_profile'):
+            representation['course'] = instance.student_profile.course
+            representation['group_name'] = instance.student_profile.group_name
+        return representation
+
+
+
 
 class StudentProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    fullName = serializers.SerializerMethodField()
+    role = serializers.SerializerMethodField()
+    group = serializers.CharField(source='group_name')
 
     class Meta:
         model = StudentProfile
-        fields = ['id', 'user', 'course']
+        fields = ['id', 'fullName', 'role', 'group', 'course']
+
+    def get_fullName(self, obj):
+        return obj.user.get_full_name()
+
+    def get_role(self, obj):
+        return obj.user.role
 
 class TeacherProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer()

@@ -16,7 +16,7 @@ from .filters import TopicFilter
 # --- USER ---
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    permission_classes = [IsAdminUserRole]  # управлять юзерами может только админ
+    permission_classes = [IsAdminUserRole]
     def get_serializer_class(self):
         if self.action == 'create':
             return UserCreateSerializer

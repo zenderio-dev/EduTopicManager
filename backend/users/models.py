@@ -52,13 +52,16 @@ class User(AbstractUser):
 class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile', verbose_name=_('Пользователь'))
     course = models.PositiveSmallIntegerField(verbose_name=_('Курс'))
+    group_name = models.CharField(max_length=100, verbose_name=_('Группа'), default='безгрупная мразь')
+
 
     class Meta:
         verbose_name = _('Профиль студента')
         verbose_name_plural = _('Профили студентов')
 
     def __str__(self):
-        return f"{self.user.get_full_name()} (Курс {self.course})"
+        return f"{self.user.get_full_name()} (Курс {self.course}, Группа {self.group_name})"
+
 
 
 class TeacherProfile(models.Model):

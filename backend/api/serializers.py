@@ -13,6 +13,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(required=True)
     middle_name = serializers.CharField(required=True)
     course = serializers.IntegerField(required=False, min_value=1, max_value=6)
+    group_name = serializers.CharField(required=False, allow_blank=False, max_length=100)
 
     password = serializers.CharField(write_only=True, required=True, min_length=8)
     re_password = serializers.CharField(write_only=True, required=True, min_length=8)

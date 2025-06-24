@@ -27,19 +27,22 @@ class UserViewSet(viewsets.ModelViewSet):
         user = request.user
         full_name = f"{user.last_name} {user.first_name} {user.middle_name}".strip()
         course = None
+        group_name = None
 
         if user.role == 'student':
             try:
                 course = user.student_profile.course
+                group_name = user.student_profile.group_name
             except StudentProfile.DoesNotExist:
-                course = None
+                pass
 
         data = {
             'id': user.id,
             'fullName': full_name,
             'username': user.username,
             'role': user.role,
-            'course': course
+            'course': course,
+            'group_name': group_name
         }
         return Response(data)
 

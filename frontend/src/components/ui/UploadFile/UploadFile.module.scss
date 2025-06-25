@@ -1,0 +1,29 @@
+.uploadWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+  
+}
+
+.label {
+  font-size: 1rem;
+  
+  display: inline-block;
+  color: #333;
+}
+
+.input {
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.fileName {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.errorText {
+  font-size: 0.85rem;
+  color: red;
+}

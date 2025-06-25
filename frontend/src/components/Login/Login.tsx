@@ -1,17 +1,11 @@
 "use client";
-import {
-  useForm,
-  SubmitHandler,
-  useFormState,
-
-} from "react-hook-form";
-import { useLoginMutation } from "@/services/auth/userApi";
+import { useForm, SubmitHandler, useFormState } from "react-hook-form";
+import { useLoginMutation, useLazyMyAccountQuery } from "@/services/auth/userApi";
 import { setAuthToken } from "@/utils/auth";
+import { useRouter } from "next/navigation";
 import LoginForm from "./LoginForm";
 
-interface FormValues extends FullStudentType{
-
-}
+interface FormValues extends FullStudentType {}
 const Login = () => {
   const { control, handleSubmit, setError, clearErrors } = useForm<FormValues>({
     defaultValues: {
@@ -21,15 +15,30 @@ const Login = () => {
   });
 
   const { errors } = useFormState<FormValues>({ control });
-  const [login, { isLoading }] = useLoginMutation();
-
- 
+  const [login, { isLoading: isLoginLoading }] = useLoginMutation();
+  const [fetchMyAccount, { isFetching: isAccountFetching }] = useLazyMyAccountQuery();
+  const router = useRouter();
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       const result = await login(data).unwrap();
-      setAuthToken(result);
+      
+      setAuthToken(result.auth_token);
+      const userData = await fetchMyAccount().unwrap();
+      
+      switch (userData.role) {
+        case "student":
+          router.push("/student/themes");
+          break;
+        case "teacher":
+          router.push("/teacher/themes");
+          break;
+        case "admin":
+          router.push("/admin/students");
+          break;
+      }
     } catch (error: any) {
+      console.log(error)
       const apiErrors = error?.data ?? {};
       Object.entries(apiErrors).forEach(([field, messages]) => {
         const message = Array.isArray(messages) ? messages[0] : messages;
@@ -40,6 +49,8 @@ const Login = () => {
       });
     }
   };
+
+  const isLoading = isLoginLoading || isAccountFetching;
 
   return (
     <LoginForm

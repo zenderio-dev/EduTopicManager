@@ -1,20 +1,15 @@
+'use client'
 import User from '@/components/User/User';
 import styles from './Header.module.scss';
+import { useMyAccountQuery } from '@/services/auth/userApi';
 
 const Header = () => {
-  const user:AdminType = {
-    fullName:"Клименко Лев",
-    id:55,
-    role:'admin',
-    profile:{
-      
-    }
-  }
+  const {data} = useMyAccountQuery()
   return (
     <header className={styles.header}>
         
         <div className={styles.headerContainer}>
-            <User user={user} className = {styles.user}></User>
+            <User user={data} className = {styles.user}></User>
         </div> 
     </header>
   )

@@ -1,13 +1,16 @@
 @use "_variables.scss" as *;
 .sidebar{
+    
+    
     transition: all 0.2s ease-in-out;
     position: fixed;
     top: 0;
     left: 0;
+    bottom: 0;
     background-color: $colorObjects;
-    height: 100vh;
+   
     width: $sidebarWidth;
-    padding:10px 15px;
+    padding: 20px 15px 8% 15px;
     z-index: 1000;
     .header{
         
@@ -17,8 +20,19 @@
         
     }
     .sidebarContainer{
+        
         height: 100%;
+       
         position: relative;
+        .content{
+            height: 100%;
+            display: flex;
+           
+            flex-direction: column;
+            justify-content: space-between;
+            
+        }
+        
         .hamburgerHeader{
             position: absolute;
             top: 15px;
@@ -41,9 +55,16 @@
             gap: 20px;
             font-size: 1.2rem;
             
-
-            
         }
+        .btnLogout{
+        width: 100%;
+        border-radius: 10px;
+        padding: 14px 7%;
+        font-size: 1.2rem;
+        text-align: left;
+        background-color: $deleteAction;
+        
+    }
     }
 }
 .sidebarClose{

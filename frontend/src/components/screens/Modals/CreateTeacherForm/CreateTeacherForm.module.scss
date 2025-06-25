@@ -1,0 +1,16 @@
+.btnContainer{
+    display: flex;
+    gap: 15px;
+    justify-self: end;
+    
+}
+.inputContainer{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.modal{
+    width: 100%;
+    max-width:480px;
+}

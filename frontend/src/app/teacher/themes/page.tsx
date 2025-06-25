@@ -1,9 +1,20 @@
+
 import styles from './page.module.scss'
 
-const page = () => {
+import ThemeManage from '@/components/screens/ThemeManage/ThemeManage';
+
+const page = async () => {
+
+  
   return (
-    <div>page</div>
-  )
+    <main className={styles.content}>
+      <section className={styles.contentContainer}>
+        <ThemeManage/>
+        
+      </section>
+    </main>
+  );
+  
 }
 
 export default page

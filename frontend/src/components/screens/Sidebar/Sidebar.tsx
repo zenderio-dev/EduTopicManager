@@ -9,19 +9,24 @@ import { useWidthScreen } from "@/shared/hooks/useWidthScreen";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import MyLink from "@/components/ui/MyLink/MyLink";
+import { useRouter } from "next/navigation";
+import { removeAuthToken } from "@/utils/auth";
+import { useDispatch } from "react-redux";
+import { Api } from "@/services/auth/baseApi";
+import MyBtn from "@/components/ui/MyBtn/MyBtn";
 
 interface Props {
   nav: {
     name: string;
     href: string;
   }[];
- 
 }
 const Sidebar = ({ nav }: Props) => {
-
-
   const widthScreen = useWidthScreen();
   const pathName = usePathname();
+
+  const dispatch = useDispatch();
+  const router = useRouter();
 
   const [activeSidebar, setActiveSidebar] = useState<boolean>(
     widthScreen > 768
@@ -34,8 +39,11 @@ const Sidebar = ({ nav }: Props) => {
   const toggleSidebar = () => {
     setActiveSidebar(!activeSidebar);
   };
-
-
+  const logout = () => {
+    removeAuthToken();
+    dispatch(Api.util.resetApiState());
+    router.replace("/login");
+  };
   return (
     <>
       <button
@@ -51,7 +59,6 @@ const Sidebar = ({ nav }: Props) => {
         })}
       >
         <div className={styles.sidebarContainer}>
-         
           <div className={styles.header}>
             <Link className={styles.logoLink} href="/">
               <PiStudentFill size={50} />
@@ -65,18 +72,33 @@ const Sidebar = ({ nav }: Props) => {
               <RxHamburgerMenu size={30} />
             </button>
           </div>
-
-          <nav>
-            <ul className={styles.navList}>
-              {nav.map((item, index) => {
-                console.log(item.href, pathName);
-              return(
-                <li key={index}>
-                  <MyLink isActive={item.href===pathName} href={item.href}>{item.name}</MyLink>
-                </li>
-              )})}
-            </ul>
-          </nav>
+          <main className={styles.content}>
+            <nav>
+              <ul className={styles.navList}>
+                {nav.map((item, index) => {
+                  console.log(item.href, pathName);
+                  return (
+                    <li key={index}>
+                      <MyLink
+                        isActive={item.href === pathName}
+                        href={item.href}
+                      >
+                        {item.name}
+                      </MyLink>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+            <MyBtn
+              className={styles.btnLogout}
+              onClick={() => {
+                logout();
+              }}
+            >
+              Выйти
+            </MyBtn>
+          </main>
         </div>
       </div>
     </>

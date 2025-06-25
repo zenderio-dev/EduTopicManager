@@ -34,17 +34,19 @@ const MySelectForm = ({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className={clsx(styles.selectButton, error && styles.errorBorder)}
+        className={styles.selectButton}
       >
         {current?.name || "Выберите"}
       </button>
-
-      <DropList
-        elems={options}
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        onSelect={(item) => onChange(item.name)}
-      />
+      <div className={styles.dropListContainer}>
+        <DropList
+          className={styles.dropList}
+          elems={options}
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          onSelect={(item) => onChange(item.name)}
+        />
+      </div>
 
       {error && <div className={styles.error}>{error}</div>}
     </div>

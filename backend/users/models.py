@@ -35,6 +35,7 @@ class User(AbstractUser):
     )
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, verbose_name=_('Роль'))
     middle_name = models.CharField(max_length=150, blank=True, verbose_name=_('Отчество'))
+    email = models.EmailField(_('email address'), unique=False, blank=True)
 
     objects = UserManager()
 

@@ -26,7 +26,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'first_name': {'read_only': True},
             'last_name': {'read_only': True},
-            'middle_name': {'read_only': True}
+            'middle_name': {'read_only': True},
+            'email': {'required': False}
         }
 
     def validate(self, data):
@@ -64,7 +65,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         # Создаем пользователя
         user = User.objects.create_user(
             username=validated_data['username'],
-            email=validated_data['email'],
+            email=validated_data.get('email'),
             password=validated_data['password'],
             first_name=first_name,
             last_name=last_name,

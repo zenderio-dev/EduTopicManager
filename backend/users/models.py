@@ -73,21 +73,21 @@ class TeacherProfile(models.Model):
         verbose_name=_('Ученая степень'),
         blank=True,
         null=True,
-        default=None  # Добавлено
+        default=None
     )
     academicTitle = models.CharField(
         max_length=100,
         verbose_name=_('Ученое звание'),
         blank=True,
         null=True,
-        default=None  # Добавлено
+        default=None
     )
     jobTitle = models.CharField(
         max_length=100,
         verbose_name=_('Должность'),
         blank=True,
         null=True,
-        default=None  # Добавлено
+        default=None
     )
     class Meta:
         verbose_name = _('Профиль преподавателя')

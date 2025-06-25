@@ -23,7 +23,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
     course = serializers.IntegerField(required=False, min_value=1, max_value=6)
     group_name = serializers.CharField(required=False, allow_blank=False, max_length=100)
 
-    # Поля для профиля преподавателя
     academicDegree = serializers.CharField(required=False, max_length=100)
     academicTitle = serializers.CharField(required=False, max_length=100)
     jobTitle = serializers.CharField(required=False, max_length=100)
@@ -46,15 +45,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, data):
-        # Проверка паролей
         if data['password'] != data['re_password']:
             raise serializers.ValidationError({'re_password': 'Пароли не совпадают.'})
 
-        # Проверка для студентов
         if data.get('role') == 'student' and not data.get('course'):
             raise serializers.ValidationError({'course': 'Для студентов необходимо указать курс.'})
 
-        # Проверка для преподавателей
         if data.get('role') == 'teacher':
             if not data.get('academicDegree'):
                 raise serializers.ValidationError({'academicDegree': 'Для преподавателя необходимо указать ученую степень.'})
@@ -63,7 +59,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
             if not data.get('jobTitle'):
                 raise serializers.ValidationError({'jobTitle': 'Для преподавателя необходимо указать должность.'})
 
-        # Проверка формата ФИО
         fullname_parts = data['fullname'].strip().split()
         if len(fullname_parts) < 2:
             raise serializers.ValidationError({'fullname': 'Укажите Фамилию и Имя (обязательно) и Отчество (по желанию)'})
@@ -71,7 +66,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        # Извлекаем и обрабатываем ФИО
         fullname = validated_data.pop('fullname')
         name_parts = fullname.strip().split()
 
@@ -79,14 +73,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
         first_name = name_parts[1]
         middle_name = ' '.join(name_parts[2:]) if len(name_parts) > 2 else ''
 
-        # Подготовка данных для создания пользователя
         validated_data.update({
             'last_name': last_name,
             'first_name': first_name,
             'middle_name': middle_name
         })
 
-        # Создаем пользователя
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data.get('email'),
@@ -97,7 +89,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
             role=validated_data['role']
         )
 
-        # Создаем профиль
         if user.role == 'student':
             StudentProfile.objects.create(
                 user=user,

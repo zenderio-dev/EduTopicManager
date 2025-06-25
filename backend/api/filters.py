@@ -2,7 +2,6 @@ from django_filters import rest_framework as filters
 from topics.models import Topic
 
 class TopicFilter(filters.FilterSet):
-    # Допустим, фильтр по курсу передается из view через context, либо можем использовать user из request
 
     class Meta:
         model = Topic
@@ -11,7 +10,7 @@ class TopicFilter(filters.FilterSet):
     def filter_queryset(self, queryset):
         user = self.request.user
         if not user.is_authenticated or user.role != 'student':
-            return queryset  # показываем всё для преподавателей и админов
+            return queryset
 
         try:
             course = user.student_profile.course

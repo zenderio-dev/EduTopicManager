@@ -4,9 +4,29 @@ from topics.models import Topic, StudentTopicChoice
 
 # --- USER SERIALIZERS ---
 class UserSerializer(serializers.ModelSerializer):
+    fullname = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'role', 'is_active', 'first_name', 'last_name', 'middle_name']
+        fields = ['id', 'username', 'email', 'role', 'is_active', 'fullname']
+
+    def get_fullname(self, obj):
+        return obj.get_full_name()
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+
+        if instance.role == 'student' and hasattr(instance, 'student_profile'):
+            rep['course'] = instance.student_profile.course
+            rep['group_name'] = instance.student_profile.group_name
+
+        elif instance.role == 'teacher' and hasattr(instance, 'teacher_profile'):
+            rep['academicDegree'] = instance.teacher_profile.academicDegree
+            rep['academicTitle'] = instance.teacher_profile.academicTitle
+            rep['jobTitle'] = instance.teacher_profile.jobTitle
+
+        return rep
+
 
 class TeacherProfileSerializer(serializers.ModelSerializer):
     fullname = serializers.SerializerMethodField()
@@ -175,3 +195,96 @@ class StudentTopicChoiceWriteSerializer(serializers.ModelSerializer):
         student = validated_data['student']
         StudentTopicChoice.objects.filter(student=student).delete()
         return super().create(validated_data)
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    # Для ввода
+    fullname = serializers.CharField(write_only=True, required=True)
+
+    # Для вывода
+    full_name = serializers.SerializerMethodField(read_only=True)
+
+    course = serializers.IntegerField(required=False)
+    group_name = serializers.CharField(required=False, max_length=100)
+    academicDegree = serializers.CharField(required=False, max_length=100)
+    academicTitle = serializers.CharField(required=False, max_length=100)
+    jobTitle = serializers.CharField(required=False, max_length=100)
+
+    email = serializers.EmailField(required=False)
+
+    class Meta:
+        model = User
+        fields = [
+            'id', 'username', 'email', 'role',
+            'fullname', 'full_name', 'course', 'group_name',
+            'academicDegree', 'academicTitle', 'jobTitle'
+        ]
+
+    def get_full_name(self, obj):
+        return obj.get_full_name()
+
+    def validate(self, data):
+        role = data.get('role', self.instance.role if self.instance else None)
+
+        fullname = data.get('fullname')
+        if not fullname or len(fullname.strip().split()) < 2:
+            raise serializers.ValidationError({'fullname': 'Укажите Фамилию и Имя (обязательно) и Отчество (по желанию).'})
+
+        if role == 'student':
+            if 'course' not in data:
+                raise serializers.ValidationError({'course': 'Поле "course" обязательно для студента.'})
+            if 'group_name' not in data:
+                raise serializers.ValidationError({'group_name': 'Поле "group_name" обязательно для студента.'})
+
+        if role == 'teacher':
+            for field in ['academicDegree', 'academicTitle', 'jobTitle']:
+                if field not in data:
+                    raise serializers.ValidationError({field: f'Поле "{field}" обязательно для преподавателя.'})
+
+        return data
+
+    def update(self, instance, validated_data):
+        fullname = validated_data.pop('fullname')
+        parts = fullname.strip().split()
+        instance.last_name = parts[0]
+        instance.first_name = parts[1] if len(parts) > 1 else ''
+        instance.middle_name = ' '.join(parts[2:]) if len(parts) > 2 else ''
+
+        instance.username = validated_data.get('username', instance.username)
+        instance.email = validated_data.get('email', instance.email)
+        instance.role = validated_data.get('role', instance.role)
+        instance.save()
+
+        if instance.role == 'student':
+            profile, _ = StudentProfile.objects.get_or_create(user=instance)
+            profile.course = validated_data['course']
+            profile.group_name = validated_data['group_name']
+            profile.save()
+
+        elif instance.role == 'teacher':
+            profile, _ = TeacherProfile.objects.get_or_create(user=instance)
+            profile.academicDegree = validated_data['academicDegree']
+            profile.academicTitle = validated_data['academicTitle']
+            profile.jobTitle = validated_data['jobTitle']
+            profile.save()
+
+        return instance
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+
+        # Добавим данные профиля
+        if instance.role == 'student' and hasattr(instance, 'student_profile'):
+            rep['course'] = instance.student_profile.course
+            rep['group_name'] = instance.student_profile.group_name
+
+        elif instance.role == 'teacher' and hasattr(instance, 'teacher_profile'):
+            rep['academicDegree'] = instance.teacher_profile.academicDegree
+            rep['academicTitle'] = instance.teacher_profile.academicTitle
+            rep['jobTitle'] = instance.teacher_profile.jobTitle
+
+        return rep
+
+
+
+

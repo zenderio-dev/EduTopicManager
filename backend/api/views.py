@@ -8,7 +8,7 @@ from topics.models import Topic, StudentTopicChoice
 from .serializers import (
     UserSerializer, StudentProfileSerializer, TeacherProfileSerializer,
     TopicSerializer, StudentTopicChoiceSerializer,
-    StudentTopicChoiceWriteSerializer, UserCreateSerializer
+    StudentTopicChoiceWriteSerializer, UserCreateSerializer, UserUpdateSerializer
 )
 from .permissions import IsAdminUserRole, IsTeacherUserRole, IsStudentUserRole, IsSelfOrAdmin
 from .filters import TopicFilter
@@ -20,6 +20,8 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'create':
             return UserCreateSerializer
+        elif self.action in ['update', 'partial_update']:
+            return UserUpdateSerializer
         return UserSerializer
 
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])

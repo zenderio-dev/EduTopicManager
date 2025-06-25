@@ -127,13 +127,13 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return representation
 
 class StudentProfileSerializer(serializers.ModelSerializer):
-    fullName = serializers.SerializerMethodField()
+    fullname = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
     group = serializers.CharField(source='group_name')
 
     class Meta:
         model = StudentProfile
-        fields = ['id', 'fullName', 'role', 'group', 'course']
+        fields = ['id', 'fullname', 'role', 'group', 'course']
 
     def get_fullName(self, obj):
         return obj.user.get_full_name()

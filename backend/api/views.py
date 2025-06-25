@@ -38,7 +38,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
             data = {
                 'id': user.id,
-                'fullName': full_name,
+                'fullname': full_name,
                 'username': user.username,
                 'role': user.role,
                 'course': course,
@@ -54,7 +54,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 pass
             data = {
                 'id': user.id,
-                'fullName': full_name,
+                'fullname': full_name,
                 'username': user.username,
                 'role': user.role,
                 'academicDegree': academicDegree,
@@ -65,7 +65,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if user.role == 'admin':
             data = {
                 'id': user.id,
-                'fullName': full_name,
+                'fullname': full_name,
                 'username': user.username,
                 'role': user.role
             }

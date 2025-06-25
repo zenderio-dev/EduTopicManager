@@ -1,0 +1,48 @@
+.wrapper {
+  /* любые нужные стили */
+}
+
+.toggleBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: inherit;
+  padding: 0.5em 0;
+}
+
+.arrow {
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.3s ease;
+  
+}
+
+/* Класс для открытого состояния — поворот стрелки вниз */
+
+.openArrow{
+     transform: rotate(45deg) translateY(-50%);
+}
+.content {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.closed {
+  max-height: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.open {
+  max-height: 1000px; /* Достаточно большое, чтобы контент вместился */
+  opacity: 1;
+  pointer-events: auto;
+}

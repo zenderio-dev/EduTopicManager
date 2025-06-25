@@ -1,0 +1,49 @@
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+.userContainer {
+  position: relative;
+  font-size: 1.3rem;
+}
+
+.user {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.avatar {
+  width: 2.2em;
+  height: 2.2em;
+  background-color: #ccc;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+}
+
+.name, .role {
+  background-color: #ccc;
+  border-radius: 4px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.name {
+  width: 6em;
+  height: 1em;
+}
+
+.role {
+  width: 4em;
+  height: 0.8em;
+  font-size: 0.7em;
+}

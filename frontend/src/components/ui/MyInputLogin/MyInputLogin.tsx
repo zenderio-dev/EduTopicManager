@@ -20,7 +20,7 @@ const MyInputLogin = forwardRef<HTMLInputElement, MyInputLoginProps>(
           ref={ref}
           type={type}
           id={inputId}
-          autoComplete="off"
+          autoComplete="new-password"
           placeholder=" "
           className={clsx(styles.input, className)}
           {...props}

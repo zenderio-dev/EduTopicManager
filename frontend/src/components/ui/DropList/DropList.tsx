@@ -27,7 +27,7 @@ const DropList = ({
   const [isAnimation, setIsAnimation] = useState(false); // включена ли анимация
   const ref = useRef<HTMLDivElement>(null);
 
-  // закрытие по клику вне
+ 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -42,7 +42,7 @@ const DropList = ({
     };
   }, [isOpen]);
 
-  // монтирование и размонтирование + анимация
+  
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
@@ -55,7 +55,7 @@ const DropList = ({
     }
   }, [isOpen]);
 
-  // включаем анимацию **после монтирования**
+
   useEffect(() => {
     if (isVisible) {
       const frame = requestAnimationFrame(() => setIsAnimation(true));
@@ -82,6 +82,7 @@ const DropList = ({
           {elems.map((elem, index) => (
             <li key={index} className={styles.dropItem}>
               <MyBtnForChoose
+              
                 className={styles.myBtn}
                 onClick={() => {
                   onSelect(elem);

@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import styles from "./Modal.module.scss";
 import { MdClose } from "react-icons/md";
 interface PropsModal {
@@ -6,14 +7,15 @@ interface PropsModal {
   name: string;
   onClose: () => void;
   footer?: React.ReactNode;
+  className?: string
 }
 
-const Modal = ({ children, name, isOpen, onClose, footer }: PropsModal) => {
+const Modal = ({ children, name, isOpen, onClose, footer, className }: PropsModal) => {
   if (!isOpen) return null;
   return (
     <div className={styles.modalContainer}>
       <div
-        className={styles.modal}
+        className={clsx(styles.modal, className)}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"

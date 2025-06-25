@@ -21,7 +21,7 @@ const MyInputForm = forwardRef<HTMLInputElement, MyInputFormProps>(
           id={inputId}
           ref={ref}
           className={clsx(styles.input, className, {
-            [styles.errorBorder]: error,
+           
           })}
           {...props}
         />

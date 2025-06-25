@@ -1,24 +1,20 @@
 export function formatName(
-  name: string,
+  name: string | undefined,
   type: 'FLName' | 'initials' | 'onlyName'
 ): string {
-  const parts = name.trim().split(' ').filter(Boolean); 
+  if (!name) return '';
+
+  const parts = name.trim().split(' ').filter(Boolean);
+  
   switch (type) {
     case 'FLName':
-      
-      return `${parts[0] || ''} ${parts[1] || ''}`.trim();
-
+      return parts.slice(0, 2).join(' ');
     case 'initials':
-     
-      const surname = parts[0] || '';
-      const initial1 = parts[1]?.[0] || '';
-      const initial2 = parts[2]?.[0] || '';
-      return `${surname} ${initial1 && initial1 + '.'} ${initial2 && initial2 + '.'}`.trim();
-
+      return parts.length >= 2
+        ? `${parts[1][0]}. ${parts[0]}`
+        : parts[0];
     case 'onlyName':
-      
-      return parts[1] || '';
-
+      return parts[0];
     default:
       return name;
   }

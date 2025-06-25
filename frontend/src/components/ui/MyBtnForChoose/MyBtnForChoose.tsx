@@ -5,9 +5,9 @@ interface MyBtnProps {
     onClick?: () => void;
     children?: React.ReactNode;
 }
-const MyBtnForChoose = ({className, onClick, children}:MyBtnProps) => {
+const MyBtnForChoose = ({className, onClick, children, ...props}:MyBtnProps) => {
     return (
-        <button className={clsx(styles.myBtn, className)} onClick={onClick}>
+        <button {...props} type="button" className={clsx(styles.myBtn, className)} onClick={onClick}>
             {children}
         </button>
     )

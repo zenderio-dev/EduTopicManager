@@ -11,5 +11,7 @@ export const Api = createApi({
         return headers;
         },
     }),
+     tagTypes: ["Students", 'Teachers'],
     endpoints: () => ({})
 })
+    

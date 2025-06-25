@@ -1,32 +1,26 @@
 interface StudentType{
-    id:number,
-    fullName:string,
+    fullname:string,
     role:'student'| 'teacher' | 'admin'
-    profile:{
-        group:string,
-        course:number,
-    }
+    group:string,
+    course:number,
+
 }
 
 interface TeacherType{
-    id:number,
-    fullName:string,
+    fullname:string,
     role:'student'| 'teacher' | 'admin'
-    profile:{
-        academicTitle:string,
-        academicDegree:string,
-        jobTitle:string
-        
-    }
+    academicTitle:string,
+    academicDegree:string,
+    jobTitle:string
+    
+    
 }
 
 interface AdminType{
     id:number,
     fullName:string,
     role:'student'| 'teacher' | 'admin'
-    profile:{
-
-    }
+    
 }
 
 interface LoginType{
@@ -34,3 +28,15 @@ interface LoginType{
     password:string
 }
 interface FullStudentType extends StudentType, LoginType{}
+interface FullTeacherType extends TeacherType, LoginType{}
+
+interface ThemeType{
+    title:string,
+    id:number,
+    description:string,
+    type_work: 'coursework'|'graduatework',
+    teacher:number
+    status:"waiting_student" | "waiting_confirm" | "confirmed"
+    student:StudentType|null
+   
+}

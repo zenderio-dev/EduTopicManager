@@ -11,7 +11,7 @@ interface MyBtnProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const MyBtn = ({className, children,isLoading=false, ...props}:MyBtnProps) => {
   return (
     <button {...props} className={clsx(styles.myBtn, className)} disabled={isLoading || props.disabled}>
-        {isLoading ? <Loader className={styles.loader} size={22}/> : children}
+        {isLoading ? <Loader className={styles.loader} /> : children}
     </button>
   )
 }

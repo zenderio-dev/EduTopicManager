@@ -1,9 +1,5 @@
-import {
-  Control,
-  Controller,
-  FieldErrors,
-} from "react-hook-form";
-import styles from "./CreateStudentForm.module.scss";
+import { Control, Controller, FieldErrors } from "react-hook-form";
+import styles from "./ModalCreateTheme.module.scss";
 import Modal from "@/components/Modal.tsx/Modal";
 import MyBtn from "@/components/ui/MyBtn/MyBtn";
 import MyInputForm from "@/components/ui/MyInputForm/MyInputForm";
@@ -14,93 +10,90 @@ interface Props {
   onSubmit: () => void;
   isOpen: boolean;
   onClose: () => void;
+  isLoading: boolean;
 }
-const courseOptions = [{ name: 1 }, { name: 2 }, { name: 3 }, { name: 4 }];
-const CreateStudentForm = ({
+
+const typesOptions = [
+  { name: "Курсовая работа" },
+  { name: "Дипломная работа" },
+];
+
+const ModalCreateThemeFields = ({
   control,
   errors,
   onSubmit,
   isOpen,
   onClose,
+  isLoading,
 }: Props) => {
   return (
     <Modal
+      className={styles.modal}
       isOpen={isOpen}
       onClose={onClose}
-      name="Создание студента"
+      name={"Создать тему"}
       footer={
         <div className={styles.btnContainer}>
-          <MyBtn onClick={onClose}>Отмена</MyBtn>
-          <MyBtn  className={styles.deleteBtn}>
+          <MyBtn disabled={isLoading} onClick={onClose}>
+            Отмена
+          </MyBtn>
+          <MyBtn
+            isLoading={isLoading}
+            disabled={isLoading}
+            onClick={onSubmit}
+            className={styles.deleteBtn}
+          >
             Создать
           </MyBtn>
         </div>
       }
     >
-      <form onSubmit={onSubmit}>
+      <form>
         <div className={styles.inputContainer}>
           <Controller
-            name="username"
-            control={control}
-            rules={{
-              required: "Введите логин",
-              minLength: { value: 3, message: "Минимум 3 символа" },
-            }}
-            render={({ field, fieldState }) => (
-              <MyInputForm
-                {...field}
-                label="Логин"
-                type="text"
-                error={fieldState.error?.message}
-              />
-            )}
-          />
-
-          <Controller
-            name="fullName"
+            name="title"
             control={control}
             rules={{
               required: "Введите фио",
-              minLength: { value: 10, message: "Минимум 10 символов" },
+              minLength: { value: 5, message: "Минимум 5 символов" },
             }}
             render={({ field, fieldState }) => (
               <MyInputForm
                 {...field}
-                label="Фио"
+                label="Название темы"
                 type="text"
                 error={fieldState.error?.message}
               />
             )}
           />
-
           <Controller
-            name="group"
+            name="type_work"
             control={control}
             rules={{
-              required: "Введите Название группы",
-              minLength: { value: 3, message: "Минимум 3 символа" },
-            }}
-            render={({ field, fieldState }) => (
-              <MyInputForm
-                {...field}
-                label="Название Группы"
-                type="text"
-                error={fieldState.error?.message}
-              />
-            )}
-          />
-
-          <Controller
-            name="course"
-            control={control}
-            rules={{
-              required: "Выберите курс",
+              required: "Выберите тип работы",
             }}
             render={({ field, fieldState }) => (
               <MySelectForm
-                options={courseOptions}
+                options={typesOptions}
                 {...field}
-                label="Название Группы"
+                label="Тип работы"
+                error={fieldState.error?.message}
+              />
+            )}
+          />
+
+          <Controller
+            name="description"
+            control={control}
+            rules={{
+              required: "Введите Описание",
+              minLength: { value: 10, message: "Минимум 10 символа" },
+            }}
+            render={({ field, fieldState }) => (
+              <MyInputForm
+                {...field}
+                label="Описание темы"
+                type="text"
                 error={fieldState.error?.message}
               />
             )}
@@ -111,4 +104,4 @@ const CreateStudentForm = ({
   );
 };
 
-export default CreateStudentForm;
+export default ModalCreateThemeFields;

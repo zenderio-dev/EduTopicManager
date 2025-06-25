@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import styles from './Loader.module.scss';
 
 interface LoaderProps {
-  size: number;
+  size?: number;
   className?: string;
 }
 

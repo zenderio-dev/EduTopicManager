@@ -1,0 +1,88 @@
+@use '_variables.scss' as *;
+.card {
+ 
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 2px 4px 8px solid black;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background-color: $bgColor;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.mainInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.type {
+  font-size: 1rem;
+  color: #888;
+}
+
+.status {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  color: white;
+  &.waiting_student { background-color: #f39c12; }
+  &.waiting_confirm { background-color: #2980b9; }
+  &.confirmed { background-color: #2ecc71; }
+}
+
+.studentRow {
+  margin-top: 4px;
+  font-size: 1rem;
+}
+
+.description {
+  font-size: 1rem;
+  color: #444;
+  max-height: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  &.expanded {
+    white-space: normal;
+    max-height: none;
+  }
+}
+
+.toggleBtn {
+  background: none;
+  color: #007bff;
+  font-size: 13px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.chooseBtn {
+  background-color: #3498db;
+}
+
+.acceptBtn {
+  background-color: #2ecc71;
+}
+
+.declineBtn {
+  background-color: #e74c3c;
+}

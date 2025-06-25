@@ -1,0 +1,57 @@
+@use "_variables.scss" as *;
+.selectContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  z-index: 100;
+  .label {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #424242;
+  }
+  .selectButton {
+    padding: 10px 14px;
+    font-size: 1.2rem;
+    border-radius: 10px;
+    background-color: white;
+    border: 1px solid #d1d5db; // neutral border
+    color: #111827;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+  
+    &:hover {
+       // blue-500
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+    &:focus{
+        border-color: $mainColor;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+  
+    &::after {
+      content: "▾";
+      float: right;
+      font-size: 12px;
+      margin-left: 10px;
+      color: #6b7280; // gray-500
+    }
+  }
+  
+  .error {
+    position: absolute;
+    font-size: 13px;
+    color: #ef4444; 
+    bottom: 0;
+    transform: translateY(100%);
+  }
+  .dropListContainer{
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    transform: translateY(100%);
+  }
+}
+
+

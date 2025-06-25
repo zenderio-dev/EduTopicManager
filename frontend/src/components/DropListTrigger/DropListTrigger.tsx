@@ -6,7 +6,7 @@ import React from "react";
 import clsx from "clsx";
 
 interface ActionType {
-  name: string;
+  name: string | number;
   modal?: (props: ModalWithControlProps) => React.ReactElement;
 }
 

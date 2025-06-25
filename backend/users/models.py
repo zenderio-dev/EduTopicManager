@@ -66,14 +66,31 @@ class StudentProfile(models.Model):
 
 
 class TeacherProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='teacher_profile', verbose_name=_('Пользователь'))
-    degree = models.CharField(max_length=100, blank=True, verbose_name=_('Степень'))
-    title = models.CharField(max_length=100, blank=True, verbose_name=_('Звание'))
-    position = models.CharField(max_length=100, blank=True, verbose_name=_('Должность'))
-
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='teacher_profile',
+                              verbose_name=_('Пользователь'))
+    academicDegree = models.CharField(
+        max_length=100,
+        verbose_name=_('Ученая степень'),
+        blank=True,
+        null=True,
+        default=None  # Добавлено
+    )
+    academicTitle = models.CharField(
+        max_length=100,
+        verbose_name=_('Ученое звание'),
+        blank=True,
+        null=True,
+        default=None  # Добавлено
+    )
+    jobTitle = models.CharField(
+        max_length=100,
+        verbose_name=_('Должность'),
+        blank=True,
+        null=True,
+        default=None  # Добавлено
+    )
     class Meta:
         verbose_name = _('Профиль преподавателя')
         verbose_name_plural = _('Профили преподавателей')
-
     def __str__(self):
         return self.user.get_full_name()

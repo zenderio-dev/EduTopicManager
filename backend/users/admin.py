@@ -35,5 +35,5 @@ class StudentProfileAdmin(admin.ModelAdmin):
 
 @admin.register(TeacherProfile)
 class TeacherProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'degree', 'title', 'position')
+    list_display = ('user', 'academicDegree', 'academicTitle', 'jobTitle')
     search_fields = ('user__username', 'user__email')

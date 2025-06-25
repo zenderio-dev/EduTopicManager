@@ -2,17 +2,31 @@ from rest_framework import serializers
 from users.models import User, StudentProfile, TeacherProfile
 from topics.models import Topic, StudentTopicChoice
 
-
 # --- USER SERIALIZERS ---
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'role', 'is_active', 'first_name', 'last_name', 'middle_name']
 
+class TeacherProfileSerializer(serializers.ModelSerializer):
+    fullname = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TeacherProfile
+        fields = ['id', 'fullname', 'academicDegree', 'academicTitle', 'jobTitle']
+
+    def get_fullname(self, obj):
+        return f"{obj.user.last_name} {obj.user.first_name} {obj.user.middle_name}" if obj.user.first_name and obj.user.last_name else None
+
 class UserCreateSerializer(serializers.ModelSerializer):
     fullname = serializers.CharField(write_only=True, required=True, help_text="ФИО в формате 'Фамилия Имя Отчество'")
     course = serializers.IntegerField(required=False, min_value=1, max_value=6)
     group_name = serializers.CharField(required=False, allow_blank=False, max_length=100)
+
+    # Поля для профиля преподавателя
+    academicDegree = serializers.CharField(required=False, max_length=100)
+    academicTitle = serializers.CharField(required=False, max_length=100)
+    jobTitle = serializers.CharField(required=False, max_length=100)
 
     password = serializers.CharField(write_only=True, required=True, min_length=8)
     re_password = serializers.CharField(write_only=True, required=True, min_length=8)
@@ -21,7 +35,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'username', 'email', 'password', 're_password',
-            'role', 'fullname', 'course', 'group_name'
+            'role', 'fullname', 'course', 'group_name',
+            'academicDegree', 'academicTitle', 'jobTitle'
         ]
         extra_kwargs = {
             'first_name': {'read_only': True},
@@ -38,6 +53,15 @@ class UserCreateSerializer(serializers.ModelSerializer):
         # Проверка для студентов
         if data.get('role') == 'student' and not data.get('course'):
             raise serializers.ValidationError({'course': 'Для студентов необходимо указать курс.'})
+
+        # Проверка для преподавателей
+        if data.get('role') == 'teacher':
+            if not data.get('academicDegree'):
+                raise serializers.ValidationError({'academicDegree': 'Для преподавателя необходимо указать ученую степень.'})
+            if not data.get('academicTitle'):
+                raise serializers.ValidationError({'academicTitle': 'Для преподавателя необходимо указать ученое звание.'})
+            if not data.get('jobTitle'):
+                raise serializers.ValidationError({'jobTitle': 'Для преподавателя необходимо указать должность.'})
 
         # Проверка формата ФИО
         fullname_parts = data['fullname'].strip().split()
@@ -81,7 +105,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
                 group_name=validated_data.get('group_name', '')
             )
         elif user.role == 'teacher':
-            TeacherProfile.objects.create(user=user)
+            TeacherProfile.objects.create(
+                user=user,
+                academicDegree=validated_data.get('academicDegree'),
+                academicTitle=validated_data.get('academicTitle'),
+                jobTitle=validated_data.get('jobTitle')
+            )
 
         return user
 
@@ -91,10 +120,11 @@ class UserCreateSerializer(serializers.ModelSerializer):
         if hasattr(instance, 'student_profile'):
             representation['course'] = instance.student_profile.course
             representation['group_name'] = instance.student_profile.group_name
+        if hasattr(instance, 'teacher_profile'):
+            representation['academicDegree'] = instance.teacher_profile.academicDegree
+            representation['academicTitle'] = instance.teacher_profile.academicTitle
+            representation['jobTitle'] = instance.teacher_profile.jobTitle
         return representation
-
-
-
 
 class StudentProfileSerializer(serializers.ModelSerializer):
     fullName = serializers.SerializerMethodField()
@@ -110,13 +140,6 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
     def get_role(self, obj):
         return obj.user.role
-
-class TeacherProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-
-    class Meta:
-        model = TeacherProfile
-        fields = ['id', 'user', 'degree', 'title', 'position']
 
 # --- TOPIC SERIALIZER ---
 class TopicSerializer(serializers.ModelSerializer):

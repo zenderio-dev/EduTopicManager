@@ -135,8 +135,9 @@ class StudentProfileSerializer(serializers.ModelSerializer):
         model = StudentProfile
         fields = ['id', 'fullname', 'role', 'group', 'course']
 
-    def get_fullName(self, obj):
+    def get_fullname(self, obj):
         return obj.user.get_full_name()
+
 
     def get_role(self, obj):
         return obj.user.role

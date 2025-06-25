@@ -62,6 +62,14 @@ class UserViewSet(viewsets.ModelViewSet):
                 'jobTitle' : jobTitle
             }
 
+        if user.role == 'admin':
+            data = {
+                'id': user.id,
+                'fullName': full_name,
+                'username': user.username,
+                'role': user.role
+            }
+
         return Response(data)
 
 # --- STUDENT PROFILE ---

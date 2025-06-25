@@ -36,14 +36,32 @@ class UserViewSet(viewsets.ModelViewSet):
             except StudentProfile.DoesNotExist:
                 pass
 
-        data = {
-            'id': user.id,
-            'fullName': full_name,
-            'username': user.username,
-            'role': user.role,
-            'course': course,
-            'group_name': group_name
-        }
+            data = {
+                'id': user.id,
+                'fullName': full_name,
+                'username': user.username,
+                'role': user.role,
+                'course': course,
+                'group_name': group_name
+            }
+
+        if user.role == 'teacher':
+            try:
+                academicDegree = user.teacher_profile.academicDegree
+                academicTitle = user.teacher_profile.academicTitle
+                jobTitle = user.teacher_profile.jobTitle
+            except TeacherProfile.DoesNotExist:
+                pass
+            data = {
+                'id': user.id,
+                'fullName': full_name,
+                'username': user.username,
+                'role': user.role,
+                'academicDegree': academicDegree,
+                'academicTitle': academicTitle,
+                'jobTitle' : jobTitle
+            }
+
         return Response(data)
 
 # --- STUDENT PROFILE ---

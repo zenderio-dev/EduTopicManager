@@ -202,3 +202,6 @@ class StudentTopicChoiceViewSet(viewsets.ModelViewSet):
         if self.action in ['create', 'update', 'partial_update']:
             return StudentTopicChoiceWriteSerializer
         return StudentTopicChoiceSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()

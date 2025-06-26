@@ -170,17 +170,23 @@ class StudentTopicChoiceSerializer(serializers.ModelSerializer):
         fields = ['id', 'student', 'topic', 'confirmed_by_teacher', 'chosen_at']
 
 class StudentTopicChoiceWriteSerializer(serializers.ModelSerializer):
-    student = serializers.PrimaryKeyRelatedField(queryset=StudentProfile.objects.all())
     topic = serializers.PrimaryKeyRelatedField(queryset=Topic.objects.all())
 
     class Meta:
         model = StudentTopicChoice
-        fields = ['student', 'topic']
+        fields = ['topic']
 
     def validate(self, data):
-        student = data['student']
+        request = self.context['request']
+        user = request.user
+
+        if not hasattr(user, 'student_profile'):
+            raise serializers.ValidationError("Пользователь не является студентом.")
+
+        student = user.student_profile
         topic = data['topic']
 
+        # Проверка типа работы в зависимости от курса
         if student.course == 1:
             allowed_types = ['coursework', 'both']
         elif student.course >= 4:
@@ -189,13 +195,23 @@ class StudentTopicChoiceWriteSerializer(serializers.ModelSerializer):
             allowed_types = ['coursework', 'both']
 
         if topic.type_work not in allowed_types:
-            raise serializers.ValidationError("Тема не доступна для курса данного студента.")
+            raise serializers.ValidationError("Тема не подходит для вашего курса.")
+
+        # Проверка: тема уже занята?
+        if StudentTopicChoice.objects.filter(topic=topic).exists():
+            raise serializers.ValidationError("Эта тема уже выбрана другим студентом.")
+
         return data
 
     def create(self, validated_data):
-        student = validated_data['student']
+        student = self.context['request'].user.student_profile
+        topic = validated_data['topic']
+
+        # Удалим предыдущий выбор, если был
         StudentTopicChoice.objects.filter(student=student).delete()
-        return super().create(validated_data)
+
+        return StudentTopicChoice.objects.create(student=student, topic=topic)
+
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):

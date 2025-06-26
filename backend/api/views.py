@@ -3,6 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 from users.models import User, StudentProfile, TeacherProfile
 from topics.models import Topic, StudentTopicChoice
 from .serializers import (
@@ -93,6 +94,20 @@ class TopicViewSet(viewsets.ModelViewSet):
     permission_classes = [IsTeacherUserRole | IsAdminUserRole]
     filter_backends = [DjangoFilterBackend]
     filterset_class = TopicFilter
+
+    def perform_create(self, serializer):
+        teacher_profile = self.request.user.teacher_profile
+        serializer.save(teacher=teacher_profile)
+
+    def get_object(self):
+        topic = super().get_object()
+        if self.request.user.role == 'teacher' and topic.teacher != self.request.user.teacher_profile:
+            raise PermissionDenied("Вы можете редактировать или удалять только свои темы.")
+        return topic
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        return super().destroy(request, *args, **kwargs)
 
 # --- STUDENT TOPIC CHOICE ---
 class StudentTopicChoiceViewSet(viewsets.ModelViewSet):

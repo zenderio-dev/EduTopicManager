@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
-    list_display = ('title', 'type_work', 'teacher', 'deadline')
+    list_display = ('title', 'type_work', 'teacher', 'description')
     list_filter = ('type_work', 'teacher')
     search_fields = ('title',)
 

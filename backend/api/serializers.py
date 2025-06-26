@@ -198,14 +198,15 @@ class StudentTopicChoiceWriteSerializer(serializers.ModelSerializer):
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-    # Для ввода
-    fullname = serializers.CharField(write_only=True, required=True)
-
-    # Для вывода
+    fullname = serializers.CharField(write_only=True, required=False)
     full_name = serializers.SerializerMethodField(read_only=True)
+
+    password = serializers.CharField(write_only=True, required=False, min_length=8)
+    re_password = serializers.CharField(write_only=True, required=False, min_length=8)
 
     course = serializers.IntegerField(required=False)
     group_name = serializers.CharField(required=False, max_length=100)
+
     academicDegree = serializers.CharField(required=False, max_length=100)
     academicTitle = serializers.CharField(required=False, max_length=100)
     jobTitle = serializers.CharField(required=False, max_length=100)
@@ -217,55 +218,83 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'username', 'email', 'role',
             'fullname', 'full_name', 'course', 'group_name',
-            'academicDegree', 'academicTitle', 'jobTitle'
+            'academicDegree', 'academicTitle', 'jobTitle',
+            'password', 're_password'
         ]
 
     def get_full_name(self, obj):
         return obj.get_full_name()
 
     def validate(self, data):
-        role = data.get('role', self.instance.role if self.instance else None)
+        role = data.get('role', self.instance.role)
 
+        # Проверка пароля (если меняется)
+        if 'password' in data or 're_password' in data:
+            if data.get('password') != data.get('re_password'):
+                raise serializers.ValidationError({'re_password': 'Пароли не совпадают.'})
+
+            request_user = self.context['request'].user
+            if not (request_user.is_superuser or request_user.role == 'admin'):
+                raise serializers.ValidationError({'password': 'Изменять пароль может только администратор.'})
+
+        # Проверка fullname (если передан)
         fullname = data.get('fullname')
-        if not fullname or len(fullname.strip().split()) < 2:
-            raise serializers.ValidationError({'fullname': 'Укажите Фамилию и Имя (обязательно) и Отчество (по желанию).'})
+        if fullname:
+            parts = fullname.strip().split()
+            if len(parts) < 2:
+                raise serializers.ValidationError({'fullname': 'Укажите Фамилию и Имя (обязательно) и Отчество (по желанию).'})
 
+        # Роль-зависимая валидация
         if role == 'student':
-            if 'course' not in data:
-                raise serializers.ValidationError({'course': 'Поле "course" обязательно для студента.'})
-            if 'group_name' not in data:
-                raise serializers.ValidationError({'group_name': 'Поле "group_name" обязательно для студента.'})
+            if 'course' in data and not isinstance(data['course'], int):
+                raise serializers.ValidationError({'course': 'Курс должен быть целым числом.'})
+            if 'group_name' in data and not data['group_name']:
+                raise serializers.ValidationError({'group_name': 'Название группы не может быть пустым.'})
 
         if role == 'teacher':
             for field in ['academicDegree', 'academicTitle', 'jobTitle']:
-                if field not in data:
-                    raise serializers.ValidationError({field: f'Поле "{field}" обязательно для преподавателя.'})
+                if field in data and not data[field]:
+                    raise serializers.ValidationError({field: f'Поле "{field}" не может быть пустым.'})
 
         return data
 
     def update(self, instance, validated_data):
-        fullname = validated_data.pop('fullname')
-        parts = fullname.strip().split()
-        instance.last_name = parts[0]
-        instance.first_name = parts[1] if len(parts) > 1 else ''
-        instance.middle_name = ' '.join(parts[2:]) if len(parts) > 2 else ''
+        # Обновляем ФИО, если есть
+        fullname = validated_data.pop('fullname', None)
+        if fullname:
+            parts = fullname.strip().split()
+            instance.last_name = parts[0]
+            instance.first_name = parts[1] if len(parts) > 1 else ''
+            instance.middle_name = ' '.join(parts[2:]) if len(parts) > 2 else ''
 
         instance.username = validated_data.get('username', instance.username)
         instance.email = validated_data.get('email', instance.email)
         instance.role = validated_data.get('role', instance.role)
         instance.save()
 
+        # Обновляем пароль, если есть
+        password = validated_data.get('password')
+        if password:
+            instance.set_password(password)
+            instance.save()
+
+        # Обновляем профили, если есть нужные поля
         if instance.role == 'student':
             profile, _ = StudentProfile.objects.get_or_create(user=instance)
-            profile.course = validated_data['course']
-            profile.group_name = validated_data['group_name']
+            if 'course' in validated_data:
+                profile.course = validated_data['course']
+            if 'group_name' in validated_data:
+                profile.group_name = validated_data['group_name']
             profile.save()
 
         elif instance.role == 'teacher':
             profile, _ = TeacherProfile.objects.get_or_create(user=instance)
-            profile.academicDegree = validated_data['academicDegree']
-            profile.academicTitle = validated_data['academicTitle']
-            profile.jobTitle = validated_data['jobTitle']
+            if 'academicDegree' in validated_data:
+                profile.academicDegree = validated_data['academicDegree']
+            if 'academicTitle' in validated_data:
+                profile.academicTitle = validated_data['academicTitle']
+            if 'jobTitle' in validated_data:
+                profile.jobTitle = validated_data['jobTitle']
             profile.save()
 
         return instance
@@ -284,6 +313,8 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             rep['jobTitle'] = instance.teacher_profile.jobTitle
 
         return rep
+
+
 
 
 

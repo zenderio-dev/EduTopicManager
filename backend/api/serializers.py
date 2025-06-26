@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         if instance.role == 'student' and hasattr(instance, 'student_profile'):
             rep['course'] = instance.student_profile.course
-            rep['group_name'] = instance.student_profile.group_name
+            rep['group'] = instance.student_profile.group
 
         elif instance.role == 'teacher' and hasattr(instance, 'teacher_profile'):
             rep['academicDegree'] = instance.teacher_profile.academicDegree
@@ -41,7 +41,7 @@ class TeacherProfileSerializer(serializers.ModelSerializer):
 class UserCreateSerializer(serializers.ModelSerializer):
     fullname = serializers.CharField(write_only=True, required=True, help_text="ФИО в формате 'Фамилия Имя Отчество'")
     course = serializers.IntegerField(required=False, min_value=1, max_value=6)
-    group_name = serializers.CharField(required=False, allow_blank=False, max_length=100)
+    group = serializers.CharField(required=False, allow_blank=False, max_length=100)
 
     academicDegree = serializers.CharField(required=False, max_length=100)
     academicTitle = serializers.CharField(required=False, max_length=100)
@@ -54,7 +54,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'username', 'email', 'password', 're_password',
-            'role', 'fullname', 'course', 'group_name',
+            'role', 'fullname', 'course', 'group',
             'academicDegree', 'academicTitle', 'jobTitle'
         ]
         extra_kwargs = {
@@ -113,7 +113,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             StudentProfile.objects.create(
                 user=user,
                 course=validated_data.get('course'),
-                group_name=validated_data.get('group_name', '')
+                group=validated_data.get('group', '')
             )
         elif user.role == 'teacher':
             TeacherProfile.objects.create(
@@ -130,7 +130,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         representation['fullname'] = instance.get_full_name()
         if hasattr(instance, 'student_profile'):
             representation['course'] = instance.student_profile.course
-            representation['group_name'] = instance.student_profile.group_name
+            representation['group'] = instance.student_profile.group
         if hasattr(instance, 'teacher_profile'):
             representation['academicDegree'] = instance.teacher_profile.academicDegree
             representation['academicTitle'] = instance.teacher_profile.academicTitle
@@ -140,7 +140,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class StudentProfileSerializer(serializers.ModelSerializer):
     fullname = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
-    group = serializers.CharField(source='group_name')
+    group = serializers.CharField(source='group')
 
     class Meta:
         model = StudentProfile
@@ -205,7 +205,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     re_password = serializers.CharField(write_only=True, required=False, min_length=8)
 
     course = serializers.IntegerField(required=False)
-    group_name = serializers.CharField(required=False, max_length=100)
+    group = serializers.CharField(required=False, max_length=100)
 
     academicDegree = serializers.CharField(required=False, max_length=100)
     academicTitle = serializers.CharField(required=False, max_length=100)
@@ -217,7 +217,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'username', 'email', 'role',
-            'fullname', 'full_name', 'course', 'group_name',
+            'fullname', 'full_name', 'course', 'group',
             'academicDegree', 'academicTitle', 'jobTitle',
             'password', 're_password'
         ]
@@ -248,8 +248,8 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         if role == 'student':
             if 'course' in data and not isinstance(data['course'], int):
                 raise serializers.ValidationError({'course': 'Курс должен быть целым числом.'})
-            if 'group_name' in data and not data['group_name']:
-                raise serializers.ValidationError({'group_name': 'Название группы не может быть пустым.'})
+            if 'group' in data and not data['group']:
+                raise serializers.ValidationError({'group': 'Название группы не может быть пустым.'})
 
         if role == 'teacher':
             for field in ['academicDegree', 'academicTitle', 'jobTitle']:
@@ -283,8 +283,8 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             profile, _ = StudentProfile.objects.get_or_create(user=instance)
             if 'course' in validated_data:
                 profile.course = validated_data['course']
-            if 'group_name' in validated_data:
-                profile.group_name = validated_data['group_name']
+            if 'group' in validated_data:
+                profile.group = validated_data['group']
             profile.save()
 
         elif instance.role == 'teacher':
@@ -305,7 +305,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         # Добавим данные профиля
         if instance.role == 'student' and hasattr(instance, 'student_profile'):
             rep['course'] = instance.student_profile.course
-            rep['group_name'] = instance.student_profile.group_name
+            rep['group'] = instance.student_profile.group
 
         elif instance.role == 'teacher' and hasattr(instance, 'teacher_profile'):
             rep['academicDegree'] = instance.teacher_profile.academicDegree

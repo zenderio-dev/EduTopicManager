@@ -28,9 +28,9 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(StudentProfile)
 class StudentProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'course', 'group_name')
-    list_filter = ('course', 'group_name')
-    search_fields = ('user__username', 'user__email', 'group_name')
+    list_display = ('user', 'course', 'group')
+    list_filter = ('course', 'group')
+    search_fields = ('user__username', 'user__email', 'group')
 
 @admin.register(TeacherProfile)
 class TeacherProfileAdmin(admin.ModelAdmin):

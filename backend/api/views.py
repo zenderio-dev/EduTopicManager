@@ -29,12 +29,12 @@ class UserViewSet(viewsets.ModelViewSet):
         user = request.user
         full_name = f"{user.last_name} {user.first_name} {user.middle_name}".strip()
         course = None
-        group_name = None
+        group = None
 
         if user.role == 'student':
             try:
                 course = user.student_profile.course
-                group_name = user.student_profile.group_name
+                group = user.student_profile.group
             except StudentProfile.DoesNotExist:
                 pass
 
@@ -44,7 +44,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 'username': user.username,
                 'role': user.role,
                 'course': course,
-                'group_name': group_name
+                'group': group
             }
 
         if user.role == 'teacher':

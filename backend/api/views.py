@@ -109,43 +109,54 @@ class TopicViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         return super().destroy(request, *args, **kwargs)
 
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['get'], url_path='available_by_teacher', permission_classes=[IsAuthenticated, IsStudentUserRole])
     def available_by_teacher(self, request):
-        user = request.user
+        student = request.user.student_profile
+        course = student.course
 
-        if user.role != 'student':
-            return Response({'detail': 'Доступ разрешён только студентам.'}, status=403)
-
-        try:
-            student = user.student_profile
-        except StudentProfile.DoesNotExist:
-            return Response({'detail': 'Профиль студента не найден.'}, status=400)
-
-        if student.course >= 4:
+        if course == 1:
+            allowed_types = ['coursework', 'both']
+        elif course >= 4:
             allowed_types = ['diploma', 'both']
         else:
             allowed_types = ['coursework', 'both']
 
-        topics = Topic.objects.filter(type_work__in=allowed_types)
+        topics = Topic.objects.filter(type_work__in=allowed_types).select_related('teacher__user')
 
-        result = {}
+        teachers = {}
         for topic in topics:
             teacher = topic.teacher
-            if teacher.user_id not in result:
-                result[teacher.user_id] = {
-                    'teacher_id': teacher.user_id,
-                    'fullname': teacher.user.get_full_name(),
-                    'topics': []
+            teacher_id = teacher.user.id
+            teacher_name = teacher.user.get_full_name()
+
+            choice = StudentTopicChoice.objects.filter(topic=topic).select_related('student__user').first()
+            if choice:
+                status = "подтверждено" if choice.confirmed_by_teacher else "ожидает подтверждения"
+                student_name = choice.student.user.get_full_name()
+            else:
+                status = "ожидается студент"
+                student_name = None
+
+            topic_data = {
+                "id": topic.id,
+                "title": topic.title,
+                "description": topic.description,
+                "type_work": topic.type_work,
+                "status": status,
+                "student": student_name
+            }
+
+            if teacher_id not in teachers:
+                teachers[teacher_id] = {
+                    "teacher_id": teacher_id,
+                    "fullname": teacher_name,
+                    "topics": []
                 }
 
-            result[teacher.user_id]['topics'].append({
-                'id': topic.id,
-                'title': topic.title,
-                'description': topic.description,
-                'type_work': topic.type_work
-            })
+            teachers[teacher_id]["topics"].append(topic_data)
 
-        return Response(list(result.values()))
+        return Response(list(teachers.values()))
+
 
     @action(detail=False, methods=['get'], url_path='my-topics-with-status', permission_classes=[IsAuthenticated, IsTeacherUserRole])
     def my_topics_with_status(self, request):

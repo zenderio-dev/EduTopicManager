@@ -33,7 +33,7 @@ class TeacherProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TeacherProfile
-        fields = ['id', 'fullname', 'academicDegree', 'academicTitle', 'jobTitle']
+        fields = ['user_id', 'fullname', 'academicDegree', 'academicTitle', 'jobTitle']
 
     def get_fullname(self, obj):
         return f"{obj.user.last_name} {obj.user.first_name} {obj.user.middle_name}" if obj.user.first_name and obj.user.last_name else None
@@ -144,7 +144,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StudentProfile
-        fields = ['id', 'fullname', 'role', 'group', 'course']
+        fields = ['user_id', 'fullname', 'role', 'group', 'course']
 
     def get_fullname(self, obj):
         return obj.user.get_full_name()

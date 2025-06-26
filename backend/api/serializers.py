@@ -157,8 +157,8 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 class TopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
-        fields = ['id', 'title', 'type_work', 'teacher', 'description']
-        read_only_fields = ['teacher']
+        fields = ['id', 'title', 'type_work', 'teacher', 'description', 'status']
+        read_only_fields = ['teacher', 'status']
 
 # --- STUDENT TOPIC CHOICE SERIALIZER ---
 class StudentTopicChoiceSerializer(serializers.ModelSerializer):

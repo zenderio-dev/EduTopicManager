@@ -113,7 +113,6 @@ class TopicViewSet(viewsets.ModelViewSet):
     def available_by_teacher(self, request):
         user = request.user
 
-        # ✅ Проверка роли
         if user.role != 'student':
             return Response({'detail': 'Доступ разрешён только студентам.'}, status=403)
 
@@ -122,16 +121,13 @@ class TopicViewSet(viewsets.ModelViewSet):
         except StudentProfile.DoesNotExist:
             return Response({'detail': 'Профиль студента не найден.'}, status=400)
 
-        # ✅ Определяем доступные типы тем
         if student.course >= 4:
             allowed_types = ['diploma', 'both']
         else:
             allowed_types = ['coursework', 'both']
 
-        # ✅ Получаем темы с фильтрацией по типу
         topics = Topic.objects.filter(type_work__in=allowed_types)
 
-        # ✅ Группируем темы по преподавателю
         result = {}
         for topic in topics:
             teacher = topic.teacher

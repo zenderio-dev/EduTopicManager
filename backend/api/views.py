@@ -185,6 +185,7 @@ class TopicViewSet(viewsets.ModelViewSet):
             results.append({
                 "id": topic.id,
                 "title": topic.title,
+                "description": topic.description,
                 "type_work": topic.type_work,
                 "status": status,
                 "student": student_data

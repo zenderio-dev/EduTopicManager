@@ -109,6 +109,48 @@ class TopicViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         return super().destroy(request, *args, **kwargs)
 
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def available_by_teacher(self, request):
+        user = request.user
+
+        # ✅ Проверка роли
+        if user.role != 'student':
+            return Response({'detail': 'Доступ разрешён только студентам.'}, status=403)
+
+        try:
+            student = user.student_profile
+        except StudentProfile.DoesNotExist:
+            return Response({'detail': 'Профиль студента не найден.'}, status=400)
+
+        # ✅ Определяем доступные типы тем
+        if student.course >= 4:
+            allowed_types = ['diploma', 'both']
+        else:
+            allowed_types = ['coursework', 'both']
+
+        # ✅ Получаем темы с фильтрацией по типу
+        topics = Topic.objects.filter(type_work__in=allowed_types)
+
+        # ✅ Группируем темы по преподавателю
+        result = {}
+        for topic in topics:
+            teacher = topic.teacher
+            if teacher.user_id not in result:
+                result[teacher.user_id] = {
+                    'teacher_id': teacher.user_id,
+                    'fullname': teacher.user.get_full_name(),
+                    'topics': []
+                }
+
+            result[teacher.user_id]['topics'].append({
+                'id': topic.id,
+                'title': topic.title,
+                'description': topic.description,
+                'type_work': topic.type_work
+            })
+
+        return Response(list(result.values()))
+
 # --- STUDENT TOPIC CHOICE ---
 class StudentTopicChoiceViewSet(viewsets.ModelViewSet):
     queryset = StudentTopicChoice.objects.all()

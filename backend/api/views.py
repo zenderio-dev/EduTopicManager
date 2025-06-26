@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
+from io import TextIOWrapper
+import csv
 from users.models import User, StudentProfile, TeacherProfile
 from topics.models import Topic, StudentTopicChoice
 from .serializers import (
@@ -74,6 +76,86 @@ class UserViewSet(viewsets.ModelViewSet):
             }
 
         return Response(data)
+
+    @action(detail=False, methods=['post'], url_path='import-students', permission_classes=[IsAdminUserRole])
+    def import_students(self, request):
+        file = request.FILES.get('file')
+        if not file:
+            return Response({'error': 'Файл не найден.'}, status=400)
+
+        decoded_file = TextIOWrapper(file.file, encoding='utf-8')
+        reader = csv.DictReader(decoded_file)
+        created_users = []
+
+        for row in reader:
+            try:
+                fullname = row['fullname']
+                username = row['username']
+                course = int(row['course'])
+                group = row['group']
+                password = row.get('password') or 'defaultpass123'
+
+                data = {
+                    'username': username,
+                    'role': 'student',
+                    'fullname': fullname,
+                    'course': course,
+                    'group': group,
+                    'password': password,
+                    're_password': password,
+                }
+
+                serializer = UserCreateSerializer(data=data)
+                serializer.is_valid(raise_exception=True)
+                user = serializer.save()
+                created_users.append(user.username)
+            except Exception as e:
+                return Response({'error': str(e), 'row': row}, status=400)
+
+        return Response({'created': created_users}, status=201)
+
+
+    @action(detail=False, methods=['post'], url_path='import-teachers', permission_classes=[IsAdminUserRole])
+    def import_teachers(self, request):
+        file = request.FILES.get('file')
+        if not file:
+            return Response({'error': 'Файл не найден.'}, status=400)
+
+        decoded_file = TextIOWrapper(file.file, encoding='utf-8')
+        reader = csv.DictReader(decoded_file)
+        created_users = []
+
+        for row in reader:
+            try:
+                fullname = row['fullname']
+                username = row['username']
+                email = row.get('email', '')
+                academicDegree = row['academicDegree']
+                academicTitle = row['academicTitle']
+                jobTitle = row['jobTitle']
+                password = row.get('password') or 'defaultpass123'
+
+                data = {
+                    'username': username,
+                    'email': email,
+                    'role': 'teacher',
+                    'fullname': fullname,
+                    'academicDegree': academicDegree,
+                    'academicTitle': academicTitle,
+                    'jobTitle': jobTitle,
+                    'password': password,
+                    're_password': password,
+                }
+
+                serializer = UserCreateSerializer(data=data)
+                serializer.is_valid(raise_exception=True)
+                user = serializer.save()
+                created_users.append(user.username)
+            except Exception as e:
+                return Response({'error': str(e), 'row': row}, status=400)
+
+        return Response({'created': created_users}, status=201)
+
 
 # --- STUDENT PROFILE ---
 class StudentProfileViewSet(viewsets.ModelViewSet):

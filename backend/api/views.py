@@ -147,6 +147,40 @@ class TopicViewSet(viewsets.ModelViewSet):
 
         return Response(list(result.values()))
 
+    @action(detail=False, methods=['get'], url_path='my-topics-with-status', permission_classes=[IsAuthenticated, IsTeacherUserRole])
+    def my_topics_with_status(self, request):
+        teacher = request.user.teacher_profile
+        topics = Topic.objects.filter(teacher=teacher)
+
+        results = []
+        for topic in topics:
+            choice = StudentTopicChoice.objects.filter(topic=topic).first()
+
+            if choice:
+                if choice.confirmed_by_teacher:
+                    status = "подтверждено"
+                else:
+                    status = "ожидает подтверждения"
+                student_data = {
+                    "id": choice.student.user.id,
+                    "fullname": choice.student.user.get_full_name(),
+                    "group": choice.student.group,
+                    "course": choice.student.course,
+                }
+            else:
+                status = "ожидается студент"
+                student_data = None
+
+            results.append({
+                "id": topic.id,
+                "title": topic.title,
+                "type_work": topic.type_work,
+                "status": status,
+                "student": student_data
+            })
+
+        return Response(results)
+
 # --- STUDENT TOPIC CHOICE ---
 class StudentTopicChoiceViewSet(viewsets.ModelViewSet):
     queryset = StudentTopicChoice.objects.all()

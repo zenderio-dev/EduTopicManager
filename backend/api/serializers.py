@@ -155,10 +155,17 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
 # --- TOPIC SERIALIZER ---
 class TopicSerializer(serializers.ModelSerializer):
+    status = serializers.SerializerMethodField()
     class Meta:
         model = Topic
         fields = ['id', 'title', 'type_work', 'teacher', 'description', 'status']
-        read_only_fields = ['teacher', 'status']
+        read_only_fields = ['teacher']
+
+    def get_status(self, obj):
+        choice = obj.choices.first()  # через related_name
+        if choice:
+            return "подтверждено" if choice.confirmed_by_teacher else "ожидает подтверждения"
+        return "ожидается студент"
 
 # --- STUDENT TOPIC CHOICE SERIALIZER ---
 class StudentTopicChoiceSerializer(serializers.ModelSerializer):
@@ -169,39 +176,60 @@ class StudentTopicChoiceSerializer(serializers.ModelSerializer):
         model = StudentTopicChoice
         fields = ['id', 'student', 'topic', 'confirmed_by_teacher', 'chosen_at']
 
+
 class StudentTopicChoiceWriteSerializer(serializers.ModelSerializer):
-    topic = serializers.PrimaryKeyRelatedField(queryset=Topic.objects.all())
+    topic = serializers.PrimaryKeyRelatedField(queryset=Topic.objects.all(), required=False)
+    confirmed_by_teacher = serializers.BooleanField(required=False)
 
     class Meta:
         model = StudentTopicChoice
-        fields = ['topic']
+        fields = ['topic', 'confirmed_by_teacher']
 
     def validate(self, data):
         request = self.context['request']
         user = request.user
 
-        if not hasattr(user, 'student_profile'):
-            raise serializers.ValidationError("Пользователь не является студентом.")
+        # Если студент выбирает тему
+        if request.method == 'POST':
+            if not hasattr(user, 'student_profile'):
+                raise serializers.ValidationError("Пользователь не является студентом.")
+            student = user.student_profile
+            topic = data['topic']
 
-        student = user.student_profile
-        topic = data['topic']
+            # Проверка типа работы по курсу
+            if student.course == 1:
+                allowed_types = ['coursework', 'both']
+            elif student.course >= 4:
+                allowed_types = ['diploma', 'both']
+            else:
+                allowed_types = ['coursework', 'both']
 
-        # Проверка типа работы в зависимости от курса
-        if student.course == 1:
-            allowed_types = ['coursework', 'both']
-        elif student.course >= 4:
-            allowed_types = ['diploma', 'both']
-        else:
-            allowed_types = ['coursework', 'both']
+            if topic.type_work not in allowed_types:
+                raise serializers.ValidationError("Тема не подходит для вашего курса.")
 
-        if topic.type_work not in allowed_types:
-            raise serializers.ValidationError("Тема не подходит для вашего курса.")
+            if StudentTopicChoice.objects.filter(topic=topic).exists():
+                raise serializers.ValidationError("Эта тема уже выбрана другим студентом.")
 
-        # Проверка: тема уже занята?
-        if StudentTopicChoice.objects.filter(topic=topic).exists():
-            raise serializers.ValidationError("Эта тема уже выбрана другим студентом.")
+        # Преподаватель подтверждает
+        if 'confirmed_by_teacher' in data:
+            if not hasattr(user, 'teacher_profile'):
+                raise serializers.ValidationError("Подтвердить тему может только преподаватель.")
 
         return data
+
+    def create(self, validated_data):
+        student = self.context['request'].user.student_profile
+        topic = validated_data['topic']
+        StudentTopicChoice.objects.filter(student=student).delete()
+        return StudentTopicChoice.objects.create(student=student, topic=topic)
+
+    def update(self, instance, validated_data):
+        # Подтверждение преподавателем
+        if 'confirmed_by_teacher' in validated_data:
+            instance.confirmed_by_teacher = validated_data['confirmed_by_teacher']
+            instance.save()
+        return instance
+
 
     def create(self, validated_data):
         student = self.context['request'].user.student_profile

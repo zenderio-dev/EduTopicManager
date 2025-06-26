@@ -205,3 +205,12 @@ class StudentTopicChoiceViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save()
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if request.user.role == 'teacher':
+            if instance.topic.teacher != request.user.teacher_profile:
+                raise PermissionDenied("Вы можете подтверждать только свои темы.")
+
+        return super().partial_update(request, *args, **kwargs)

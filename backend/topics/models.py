@@ -18,11 +18,6 @@ class Topic(models.Model):
     teacher = models.ForeignKey(TeacherProfile, on_delete=models.CASCADE, related_name='topics', verbose_name=_('Преподаватель'))
     type_work = models.CharField(max_length=20, choices=TYPE_CHOICES, verbose_name=_('Тип работы'))
     description = models.TextField(blank=True, verbose_name='Описание темы')
-    status = models.CharField(
-        max_length=32,
-        choices=STATUS_CHOICES,
-        default='waiting_student'
-    )
 
     class Meta:
         verbose_name = _('Тема')

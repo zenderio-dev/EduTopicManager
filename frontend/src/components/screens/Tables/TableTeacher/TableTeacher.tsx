@@ -13,9 +13,10 @@ import ModalCreateUsersFromFile from "../../Modals/ModalCreateUsersFile/ModalCre
 import { useAllStudentsQuery, useAllTeachersQuery } from "@/services/auth/userApi";
 import Loader from "@/components/ui/Loader/Loader";
 import ModalCreateTeacher from "../../Modals/ModalCreateTeacher/ModalCreateTeacher";
+import ModalEditTeacher from "../../Modals/ModalEditTeacher/ModalEditTeacher";
 
 
-const columns: ColumnDef<StudentType>[] = [
+const columns: ColumnDef<TeacherType>[] = [
   {
     id: "actions",
     header: "",
@@ -25,7 +26,7 @@ const columns: ColumnDef<StudentType>[] = [
           {
             name: "Редактировать пользователя",
             modal: ({ isOpen, onClose }) => (
-              <ModalEditStudent isOpen={isOpen} onClose={onClose} />
+              <ModalEditTeacher teacher={row.original} isOpen={isOpen} onClose={onClose} />
             ),
           },
           {
@@ -96,7 +97,7 @@ const TableTeacher = () => {
         />
       </div>
 
-      <Table<StudentType> columns={columns} data={paginatedData} />
+      <Table<TeacherType> columns={columns} data={paginatedData} />
     </section>
   );
 };

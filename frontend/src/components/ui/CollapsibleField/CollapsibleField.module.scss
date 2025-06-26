@@ -15,7 +15,7 @@
 }
 
 .arrow {
-  display: inline-block;
+ 
   width: 0.6em;
   height: 0.6em;
   border-right: 2px solid currentColor;
@@ -28,11 +28,15 @@
 /* Класс для открытого состояния — поворот стрелки вниз */
 
 .openArrow{
-     transform: rotate(45deg) translateY(-50%);
+    transform: rotate(45deg) translateY(-30%);
 }
 .content {
-  overflow: hidden;
-  transition: max-height 0.3s ease;
+  
+  transition: max-height 0.4s ease-in;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+
 }
 
 .closed {

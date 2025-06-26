@@ -1,6 +1,8 @@
 import clsx from "clsx";
 import styles from "./Modal.module.scss";
 import { MdClose } from "react-icons/md";
+import { useEffect } from "react";
+import Loader from "../ui/Loader/Loader";
 interface PropsModal {
   children: React.ReactNode;
   isOpen: boolean;
@@ -8,9 +10,21 @@ interface PropsModal {
   onClose: () => void;
   footer?: React.ReactNode;
   className?: string
+  isLoading?: boolean;  
 }
 
-const Modal = ({ children, name, isOpen, onClose, footer, className }: PropsModal) => {
+const Modal = ({ children, name, isOpen, onClose, footer, className, isLoading=false }: PropsModal) => {
+  useEffect(() => {
+  if (isOpen) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "";
+  }
+
+  return () => {
+    document.body.style.overflow = "";
+  };
+}, [isOpen]);
   if (!isOpen) return null;
   return (
     <div className={styles.modalContainer}>
@@ -21,6 +35,7 @@ const Modal = ({ children, name, isOpen, onClose, footer, className }: PropsModa
         aria-labelledby="modal-title"
       >
         <header className={styles.modalHeader}>
+          
           <div className={styles.headerContainer}>
             <h2 id="modal-title" className={styles.name}>
               {name}
@@ -30,7 +45,13 @@ const Modal = ({ children, name, isOpen, onClose, footer, className }: PropsModa
             </button>
           </div>
         </header>
-        <main className={styles.modalMain}>{children}</main>
+        <main className={styles.modalMain}>
+          {isLoading ? (
+            <div className={styles.loading}><Loader color="#000" size={30}/></div>
+          ) : (
+            children
+          )}
+        </main>
         {footer && <footer className={styles.modalFooter}>{footer}</footer>}
       </div>
     </div>

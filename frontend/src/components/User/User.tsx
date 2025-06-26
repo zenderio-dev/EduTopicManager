@@ -15,6 +15,7 @@ const showRoles = {
   teacher:'Преподаватель'
 }
 const User = ({ className, user }: TypeProps) => {
+  console.log(user)
   if(user === undefined)
     return(<SceletonUser/>)
   return (

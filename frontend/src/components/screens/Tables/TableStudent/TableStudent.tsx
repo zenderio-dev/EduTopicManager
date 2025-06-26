@@ -24,7 +24,7 @@ const columns: ColumnDef<StudentType>[] = [
           {
             name: "Редактировать пользователя",
             modal: ({ isOpen, onClose }) => (
-              <ModalEditStudent isOpen={isOpen} onClose={onClose}  />
+              <ModalEditStudent student={row.original} isOpen={isOpen} onClose={onClose}  />
             ),
           },
           {
@@ -39,7 +39,7 @@ const columns: ColumnDef<StudentType>[] = [
       </DropListTrigger>
     ),
   },
-  { accessorKey: "fullName", header: "ФИО" },
+  { accessorKey: "fullname", header: "ФИО" },
   { accessorKey: "group", header: "Группа" },
   { accessorKey: "course", header: "Курс" },
 ];

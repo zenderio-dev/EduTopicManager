@@ -37,6 +37,9 @@ const MySelectForm = ({
         className={styles.selectButton}
       >
         {current?.name || "Выберите"}
+        <div
+          className={clsx(styles.arrow, { [styles.openArrow]: isOpen })}
+        ></div>
       </button>
       <div className={styles.dropListContainer}>
         <DropList

@@ -11,6 +11,9 @@
     color: #424242;
   }
   .selectButton {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 10px 14px;
     font-size: 1.2rem;
     border-radius: 10px;
@@ -29,14 +32,19 @@
         border-color: $mainColor;
         box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
     }
-  
-    &::after {
-      content: "▾";
-      float: right;
-      font-size: 12px;
-      margin-left: 10px;
-      color: #6b7280; // gray-500
+    .arrow {
+ 
+      width: 0.6em;
+      height: 0.6em;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(-45deg);
+      transition: transform 0.3s ease;
     }
+    .openArrow{
+      transform: rotate(45deg) translateY(-30%);
+    }
+   
   }
   
   .error {

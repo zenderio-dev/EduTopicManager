@@ -14,6 +14,7 @@ interface Props {
   onClose: () => void;
   isLoading: boolean;
   isEdit?: boolean;
+  isUserLoading?: boolean;
 }
 
 const courseOptions = [{ name: 1 }, { name: 2 }, { name: 3 }, { name: 4 }];
@@ -25,14 +26,17 @@ const CreateStudentForm = ({
   isOpen,
   onClose,
   isLoading,
+  isUserLoading=false,
   isEdit,
 }: Props) => {
   return (
     <Modal
+    isLoading={isUserLoading}
       className={styles.modal}
       isOpen={isOpen}
       onClose={onClose}
       name={isEdit ? "Редактирование студента" : "Создание студента"}
+      
       footer={
         <div className={styles.btnContainer}>
           <MyBtn disabled={isLoading} onClick={onClose}>

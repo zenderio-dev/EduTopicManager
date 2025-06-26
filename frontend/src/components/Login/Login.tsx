@@ -5,21 +5,21 @@ import { setAuthToken } from "@/utils/auth";
 import { useRouter } from "next/navigation";
 import LoginForm from "./LoginForm";
 
-interface FormValues extends FullStudentType {}
+
 const Login = () => {
-  const { control, handleSubmit, setError, clearErrors } = useForm<FormValues>({
+  const { control, handleSubmit, setError, clearErrors } = useForm<LoginType>({
     defaultValues: {
       username: "",
       password: "",
     },
   });
 
-  const { errors } = useFormState<FormValues>({ control });
+  const { errors } = useFormState<LoginType>({ control });
   const [login, { isLoading: isLoginLoading }] = useLoginMutation();
   const [fetchMyAccount, { isFetching: isAccountFetching }] = useLazyMyAccountQuery();
   const router = useRouter();
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+  const onSubmit: SubmitHandler<LoginType> = async (data) => {
     try {
       const result = await login(data).unwrap();
       
@@ -43,7 +43,7 @@ const Login = () => {
       Object.entries(apiErrors).forEach(([field, messages]) => {
         const message = Array.isArray(messages) ? messages[0] : messages;
         setError(
-          (field in data ? field : "non_field_errors") as keyof FormValues,
+          (field in data ? field : "non_field_errors") as keyof LoginType,
           { type: "server", message }
         );
       });

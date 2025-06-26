@@ -10,12 +10,9 @@ interface ModalDeleteProps {
   onClose: () => void;
 }
 
-interface FormValues extends FullTeacherType {
-  re_password: string;
-}
 
 const ModalCreateStudent = ({ isOpen, onClose }: ModalDeleteProps) => {
-  const { control, handleSubmit, setError } = useForm<FormValues>({
+  const { control, handleSubmit, setError } = useForm<RegisterTeacherType>({
     defaultValues: {
       username: "",
       password: "",
@@ -29,11 +26,11 @@ const ModalCreateStudent = ({ isOpen, onClose }: ModalDeleteProps) => {
     },
   });
 
-  const { errors } = useFormState<FormValues>({ control });
+  const { errors } = useFormState<RegisterTeacherType>({ control });
 
   const [createAccount, { isLoading }] = useCreateAccountMutation();
 
-  const onSubmit = async (formData: FormValues) => {
+  const onSubmit = async (formData: RegisterTeacherType) => {
     console.log(formData)
     if (formData.password !== formData.re_password) {
       setError("re_password", {
@@ -44,21 +41,17 @@ const ModalCreateStudent = ({ isOpen, onClose }: ModalDeleteProps) => {
     }
 
     try {
-      const userPayload = {
-        ...formData,
-        role: "teacher", 
-        
-      };
-
-      console.log("userPayload:", userPayload); 
-
-      await createAccount(userPayload).unwrap();
+      await createAccount(formData).unwrap();
       onClose();
     } catch (err: any) {
-      const message = err?.data?.detail ?? "Ошибка при создании аккаунта";
-      setError("username", {
-        type: "server",
-        message,
+      console.log(err)
+      const apiErrors = err?.data ?? {};
+       Object.entries(apiErrors).forEach(([field, messages]) => {
+        const message = Array.isArray(messages) ? messages[0] : messages;
+        setError(
+          (field in formData ? field : "non_field_errors") as keyof RegisterTeacherType,
+          { type: "server", message }
+        );
       });
     }
   };

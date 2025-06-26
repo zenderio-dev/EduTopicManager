@@ -158,7 +158,7 @@ class TopicViewSet(viewsets.ModelViewSet):
         return Response(list(teachers.values()))
 
 
-    @action(detail=False, methods=['get'], url_path='my-topics-with-status', permission_classes=[IsAuthenticated, IsTeacherUserRole])
+    @action(detail=False, methods=['get'], url_path='my_topics_with_status', permission_classes=[IsAuthenticated, IsTeacherUserRole])
     def my_topics_with_status(self, request):
         teacher = request.user.teacher_profile
         topics = Topic.objects.filter(teacher=teacher)

@@ -13,6 +13,7 @@ interface ActionType {
 interface TriggerProps {
   children: React.ReactNode;
   actions: ActionType[];
+  positionList?:'left';
 }
 
 interface ModalWithControlProps {
@@ -21,7 +22,7 @@ interface ModalWithControlProps {
   [key: string]: any;
 }
 
-const DropListTrigger = ({ children, actions }: TriggerProps) => {
+const DropListTrigger = ({ children, actions, positionList }: TriggerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalContent, setModalContent] = useState<React.ReactNode | null>(
     null
@@ -51,8 +52,9 @@ const DropListTrigger = ({ children, actions }: TriggerProps) => {
         {children}
       </div>
 
-      <div className={styles.dropList}>
+      <div className={clsx(styles.dropList, {[styles.left]: positionList==='left'})}>
         <DropList
+          
           elems={actions}
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}

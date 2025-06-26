@@ -14,7 +14,7 @@ const LayoutContent = ({ children }: { children: React.ReactNode }) => {
         nav={[
           { name: "Преподаватели", href: "/admin/teachers" },
           { name: "Студенты", href: "/admin/students" },
-          { name: "работа", href: "/admin/work" },
+          { name: "работы", href: "/admin/works" },
         ]}
       />
       <div className={styles.mainContent}>

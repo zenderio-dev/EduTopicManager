@@ -1,9 +1,12 @@
 import { Control, Controller, FieldErrors } from "react-hook-form";
-import styles from "./ModalCreateTheme.module.scss";
+import styles from "./CreateTopicForm.module.scss";
 import Modal from "@/components/Modal.tsx/Modal";
 import MyBtn from "@/components/ui/MyBtn/MyBtn";
 import MyInputForm from "@/components/ui/MyInputForm/MyInputForm";
 import MySelectForm from "@/components/ui/MySelect/MySelect";
+import MyTextarea from "@/components/ui/MyTextArea/MyTextArea";
+
+
 interface Props {
   control: Control<any>;
   errors: FieldErrors;
@@ -11,27 +14,30 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   isLoading: boolean;
+  isEdit?: boolean;
 }
 
 const typesOptions = [
-  { name: "Курсовая работа" },
-  { name: "Дипломная работа" },
+  { name: "Курсовая работа", value: "coursework" },
+  { name: "Дипломная работа", value: "diploma" },
+  { name: "Совместная работа", value: "both" },
 ];
 
-const ModalCreateThemeFields = ({
+const ModalCreateTopicFields = ({
   control,
   errors,
   onSubmit,
   isOpen,
   onClose,
   isLoading,
+  isEdit = false,
 }: Props) => {
   return (
     <Modal
       className={styles.modal}
       isOpen={isOpen}
       onClose={onClose}
-      name={"Создать тему"}
+      name={isEdit ? "Изменить тему":"Создать тему"}
       footer={
         <div className={styles.btnContainer}>
           <MyBtn disabled={isLoading} onClick={onClose}>
@@ -43,7 +49,7 @@ const ModalCreateThemeFields = ({
             onClick={onSubmit}
             className={styles.deleteBtn}
           >
-            Создать
+            {isEdit ? "Сохранить" : "Создать"}
           </MyBtn>
         </div>
       }
@@ -54,7 +60,7 @@ const ModalCreateThemeFields = ({
             name="title"
             control={control}
             rules={{
-              required: "Введите фио",
+              required: "Введите название темы",
               minLength: { value: 5, message: "Минимум 5 символов" },
             }}
             render={({ field, fieldState }) => (
@@ -87,13 +93,12 @@ const ModalCreateThemeFields = ({
             control={control}
             rules={{
               required: "Введите Описание",
-              minLength: { value: 10, message: "Минимум 10 символа" },
+              minLength: { value: 10, message: "Минимум 10 символов" },
             }}
             render={({ field, fieldState }) => (
-              <MyInputForm
+              <MyTextarea
                 {...field}
                 label="Описание темы"
-                type="text"
                 error={fieldState.error?.message}
               />
             )}
@@ -104,4 +109,4 @@ const ModalCreateThemeFields = ({
   );
 };
 
-export default ModalCreateThemeFields;
+export default ModalCreateTopicFields;

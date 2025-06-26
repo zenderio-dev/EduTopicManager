@@ -10,8 +10,10 @@
     .dropList{
         position: absolute;
         bottom: 0;
-        left: 0;
+        left: -200px;
         transform: translateY(100%);
     }
-    
+    .left{
+        left: -250px;
+    }
 }

@@ -1,28 +1,28 @@
 "use client";
 import Modal from "@/components/Modal.tsx/Modal";
-import styles from "./ModalDelete.module.scss";
-import User from "@/components/User/User";
+import styles from "./ModalDeleteTopic.module.scss";
+
 import MyBtn from "@/components/ui/MyBtn/MyBtn";
-import { useDeleteUserMutation } from "@/services/api/userApi";
-import { StudentType, TeacherType } from "@/types/userTypes";
+import { FullTopicType, TopicType } from "@/types/userTypes";
+import { useDeleteTopicMutation } from "@/services/api/topicsApi";
 
 interface ModalDeleteProps {
   isOpen: boolean;
   onClose: () => void;
-  user: StudentType | TeacherType;
+  data: FullTopicType | TopicType;
 }
 
-const ModalDelete = ({ isOpen, onClose, user }: ModalDeleteProps) => {
-  const [deleteAccount, { isLoading }] = useDeleteUserMutation();
+const ModalDeleteTopic = ({ isOpen, onClose, data }: ModalDeleteProps) => {
+  const [deleteAccount, { isLoading }] = useDeleteTopicMutation();
   async function handleDelete() {
-    await deleteAccount(user.user_id).unwrap();
+    await deleteAccount(data.id).unwrap();
     onClose();
   }
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      name="Удаление пользователя"
+      name="Удаление темы"
       footer={
         <div className={styles.btnContainer}>
           <MyBtn onClick={onClose}>Отмена</MyBtn>
@@ -39,12 +39,11 @@ const ModalDelete = ({ isOpen, onClose, user }: ModalDeleteProps) => {
       <div className={styles.modalContainer}>
         <p className={styles.deleteText}>
           Вы уверены, что хотите удалить
-          <br /> пользователя?
+          <br /> тему "{data.title}"?
         </p>
-        <User className={styles.user} user={user}></User>
       </div>
     </Modal>
   );
 };
 
-export default ModalDelete;
+export default ModalDeleteTopic;

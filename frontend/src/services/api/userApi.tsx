@@ -1,6 +1,7 @@
 import CreateStudentForm from "@/components/screens/Modals/CreateStudentForm/CreateStudentForm";
-import { Api } from "./baseApi"; // путь до твоего файла с `createApi`
-import { use } from "react";
+import { Api } from "./baseApi"; 
+
+import { AdminType, LoginType, PatchStudentType, PatchTeacherType, RegisterStudentType, RegisterTeacherType, StudentType, StudentWithUsername, TeacherType, TeacherWithUsername } from "@/types/userTypes";
 
 export const userApi = Api.injectEndpoints({
   endpoints: (builder) => ({
@@ -83,4 +84,5 @@ export const {
   useGetAllInfoUserQuery,
   useDeleteUserMutation,
   usePatchUserMutation,
+  
 } = userApi;

@@ -1,7 +1,7 @@
 
 import styles from './page.module.scss'
 
-import ThemeManage from '@/components/screens/ThemeManage/ThemeManage';
+import TopicManage from '@/components/screens/TopicManage/TopicManage';
 
 const page = async () => {
 
@@ -9,7 +9,7 @@ const page = async () => {
   return (
     <main className={styles.content}>
       <section className={styles.contentContainer}>
-        <ThemeManage/>
+        <TopicManage/>
         
       </section>
     </main>

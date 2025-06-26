@@ -1,68 +1,69 @@
-interface BaseRole{
+export interface BaseRole {
     fullname: string;
-   
-    user_id:number
+    user_id: number;
 }
 
-interface StudentType extends BaseRole {
-    
-    group:string,
-    course:number,
-    role: 'student',
+export interface StudentType extends BaseRole {
+    group: string;
+    course: number;
+    role: 'student';
 }
 
-interface TeacherType extends BaseRole {
-    academicTitle:string,
-    academicDegree:string,
-    jobTitle:string,
-    Themes:ThemeType[],
-    role: 'teacher',
-    
+export interface TeacherType extends BaseRole {
+    academicTitle: string;
+    academicDegree: string;
+    jobTitle: string;
+    Themes: TopicType[];
+    role: 'teacher';
 }
 
-interface AdminType extends BaseRole {
-    role: 'admin',
+export interface AdminType extends BaseRole {
+    role: 'admin';
 }
 
-interface StudentWithUsername extends StudentType {
+export interface StudentWithUsername extends StudentType {
     username: string;
 }
 
-interface TeacherWithUsername extends TeacherType {
-    username: string;
-}
-interface AdminWithUsername extends AdminType {
+export interface TeacherWithUsername extends TeacherType {
     username: string;
 }
 
-
-
-
-interface LoginType{
-    username:string
-    password:string
-    re_password:string
+export interface AdminWithUsername extends AdminType {
+    username: string;
 }
 
-type RegisterStudentType = Omit<StudentType, 'id'> & LoginType;
-type RegisterTeacherType = Omit<TeacherType, 'id'> & LoginType;
-
-type PatchStudentType = Partial<RegisterStudentType>;
-type PatchTeacherType = Partial<RegisterTeacherType>;
-
-
-
-
-interface ThemeType{
-    title:string,
-    id:number,
-    description:string,
-    type_work: 'coursework'|'graduatework',
-    teacher:TeacherType|null,
-    status:"waiting_student" | "waiting_confirm" | "confirmed"
-    student:StudentType|null
-   
+export interface LoginType {
+    username: string;
+    password: string;
+    re_password: string;
 }
 
+export type RegisterStudentType = Omit<StudentType, 'user_id'> & LoginType;
+export type RegisterTeacherType = Omit<TeacherType, 'user_id'> & LoginType;
 
+export type PatchStudentType = Partial<RegisterStudentType>;
+export type PatchTeacherType = Partial<RegisterTeacherType>;
 
+export interface TopicType {
+    id:number;
+    title: string;
+    description: string;
+    type_work: "coursework" | "diploma" | "both";
+}
+export interface FullTopicType extends TopicType {
+    status: "ожидается студент" | "ожидает подтверждения" | "подтверждено";
+    student: StudentType | null;
+}
+export type CreateTopicType = Omit<TopicType, 'id'>;
+export type PatchTopicType = Partial<FullTopicType>;
+
+export interface ConfirmTopicType {
+    confirmed_by_teacher: boolean;
+}
+
+export interface TopicListChoiseType { 
+    teacher_id: number;
+    fullname: string;
+    topics: FullTopicType[];
+}

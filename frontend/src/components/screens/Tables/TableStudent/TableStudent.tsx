@@ -10,9 +10,9 @@ import ModalEditStudent from "../../Modals/ModalEditStudent/ModalEditStudent";
 import ModalDelete from "../../Modals/ModalDelete/ModalDelete";
 import ModalCreateStudent from "../../Modals/ModalCreateStudent/ModalCreateStudent";
 import ModalCreateUsersFromFile from "../../Modals/ModalCreateUsersFile/ModalCreateUsersFromFile";
-import { useAllStudentsQuery } from "@/services/auth/userApi";
+import { useAllStudentsQuery } from "@/services/api/userApi";
 import Loader from "@/components/ui/Loader/Loader";
-
+import { StudentType } from "@/types/userTypes";
 
 const columns: ColumnDef<StudentType>[] = [
   {
@@ -24,13 +24,21 @@ const columns: ColumnDef<StudentType>[] = [
           {
             name: "Редактировать пользователя",
             modal: ({ isOpen, onClose }) => (
-              <ModalEditStudent student={row.original} isOpen={isOpen} onClose={onClose}  />
+              <ModalEditStudent
+                student={row.original}
+                isOpen={isOpen}
+                onClose={onClose}
+              />
             ),
           },
           {
             name: "Удалить пользователя",
             modal: ({ isOpen, onClose }) => (
-              <ModalDelete isOpen={isOpen} onClose={onClose} user={row.original} />
+              <ModalDelete
+                isOpen={isOpen}
+                onClose={onClose}
+                user={row.original}
+              />
             ),
           },
         ]}
@@ -45,10 +53,8 @@ const columns: ColumnDef<StudentType>[] = [
 ];
 
 const TableStudent = () => {
- 
   const { data: allStudents = [], isLoading, error } = useAllStudentsQuery();
 
-  
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -59,9 +65,8 @@ const TableStudent = () => {
     return allStudents.slice(start, start + pagination.pageSize);
   }, [allStudents, pagination]);
 
-
   if (isLoading) {
-    return <Loader/>;
+    return <Loader />;
   }
   if (error) {
     return <div>Ошибка загрузки: {(error as any).message}</div>;

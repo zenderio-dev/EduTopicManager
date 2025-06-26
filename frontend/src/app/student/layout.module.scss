@@ -1,0 +1,13 @@
+@use "_variables.scss" as *;
+
+.mainContent{
+   padding-left: $sidebarWidth;
+    
+    
+    
+}
+@media (max-width: 768px) {
+    .mainContent{
+        padding-left: 0;
+    }
+}

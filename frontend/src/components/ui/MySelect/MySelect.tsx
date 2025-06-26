@@ -5,7 +5,11 @@ import DropList from "../DropList/DropList";
 import styles from "./MySelect.module.scss";
 import clsx from "clsx";
 
-export type DropItem = { name: string | number; icon?: React.ReactNode };
+export type DropItem = {
+  name: string | number;
+  value?: string | number;
+  icon?: React.ReactNode;
+};
 
 interface MySelectFormProps {
   label: string;

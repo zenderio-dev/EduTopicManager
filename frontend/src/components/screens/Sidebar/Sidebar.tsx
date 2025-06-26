@@ -12,7 +12,7 @@ import MyLink from "@/components/ui/MyLink/MyLink";
 import { useRouter } from "next/navigation";
 import { removeAuthToken } from "@/utils/auth";
 import { useDispatch } from "react-redux";
-import { Api } from "@/services/auth/baseApi";
+import { Api } from "@/services/api/baseApi";
 import MyBtn from "@/components/ui/MyBtn/MyBtn";
 
 interface Props {

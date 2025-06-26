@@ -2,7 +2,11 @@
 import { useEffect } from "react";
 import { useForm, useFormState } from "react-hook-form";
 import CreateStudentForm from "../CreateStudentForm/CreateStudentForm";
-import { useGetAllInfoUserQuery, usePatchUserMutation } from "@/services/auth/userApi";
+import {
+  useGetAllInfoUserQuery,
+  usePatchUserMutation,
+} from "@/services/api/userApi";
+import { PatchStudentType, StudentType } from "@/types/userTypes";
 
 interface ModalEditStudentProps {
   isOpen: boolean;
@@ -15,11 +19,9 @@ const ModalEditStudent = ({
   onClose,
   student,
 }: ModalEditStudentProps) => {
-
-
   const [patchUser, { isLoading }] = usePatchUserMutation();
-  const {data:studentInfo, isLoading:isUserLoading} = useGetAllInfoUserQuery(student.user_id)
-
+  const { data: studentInfo, isLoading: isUserLoading } =
+    useGetAllInfoUserQuery(student.user_id);
 
   const { control, handleSubmit, reset, setError } = useForm<PatchStudentType>({
     defaultValues: {
@@ -57,7 +59,7 @@ const ModalEditStudent = ({
       });
       return;
     }
-     const { password, re_password, ...rest } = formData;
+    const { password, re_password, ...rest } = formData;
     const data = {
       ...rest,
       ...(password ? { password, re_password } : {}), // добавим только если пароль введён

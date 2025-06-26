@@ -1,0 +1,122 @@
+/* Topic.module.scss */
+.card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 1px 3px 4px rgba(0, 0, 0, 0.05);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  align-items: center;
+}
+
+.mainInfo {
+  flex: 1;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  
+}
+
+.type {
+  font-size: 1.1rem;
+  color: #666;
+  margin-top: 0.9rem;
+}
+
+.status {
+  padding: 1rem 0.8rem;
+  border-radius: 8px;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.05);
+  font-size: 1rem;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+
+.waiting_student {
+  background: #fff4e5;
+  
+  color: #b36b00;
+  
+}
+
+.waiting_confirm {
+  background: #e5f0ff;
+  color: #005cb3;
+  padding: 10px;
+}
+
+.confirmed {
+  background: #e6ffed;
+  color: #22863a;
+  padding: 10px;
+}
+
+.studentRow {
+  
+}
+
+.description {
+  margin-top: 0.75rem;
+  font-size: 1.2rem;
+  line-height: 1.4;
+  max-height: 4.2em;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.expanded {
+  max-height: 100vh;
+}
+
+.toggleBtn {
+  margin-top: 0.5rem;
+  background: none;
+  border: none;
+  
+  cursor: pointer;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chooseBtn {
+  background-color: #0070f3;
+  color: #fff;
+}
+
+.acceptBtn {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.declineBtn {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.moreBtn {
+  background: none;
+  border: none;
+  font-size: 1.7rem;
+  cursor: pointer;
+  color: #666;
+}

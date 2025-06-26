@@ -3,11 +3,12 @@ import clsx from "clsx";
 import styles from "./User.module.scss";
 import { formatName } from "@/utils";
 import SceletonUser from "../ui/Sceletons/SceletonUser/SceletonUser";
+import { AdminType, StudentType, TeacherType } from "@/types/userTypes";
 
 
 interface TypeProps{
   className?:React.ReactNode,
-  user:AdminType|StudentType|TeacherType|undefined
+  user:{fullname:string, role?:"admin" | "student" | "teacher"} | AdminType | StudentType | TeacherType | undefined
 }
 const showRoles = {
   admin:'Администратор',
@@ -24,7 +25,7 @@ const User = ({ className, user }: TypeProps) => {
         <div className={styles.avatar}></div>
         <div className={styles.userContainer}>
           <div className={styles.name}>{formatName(user.fullname, 'FLName')}</div>
-          <div className={styles.role}>{showRoles[user.role]}</div>
+          <div className={styles.role}>{user.role? showRoles[user.role]:null}</div>
         </div>
       </button>
     </div>

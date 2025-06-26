@@ -1,0 +1,64 @@
+// CardTeacher.module.scss
+@use '_variables.scss' as *;
+
+.cardTeacher {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  
+  margin-bottom: 1rem;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: $bgColor;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: #f0f0f0;
+  }
+}
+
+.openHeader {
+  background: #f5f5ff;
+}
+
+.arrow {
+  width: 1em;
+  height: 1em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.3s ease;
+  margin-left: 0.5rem;
+}
+
+.openArrow {
+  transform: rotate(45deg) translateY(-30%);
+}
+
+
+.dropdown {
+  max-height: 0;
+  opacity: 0;
+  
+  display: flex;
+  pointer-events: none;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 1rem;
+  background: #fff;
+}
+
+.dropdownActive {
+  max-height: 1000px; /* достаточно большое значение под ваш контент */
+  opacity: 1;
+  pointer-events: all;
+  padding: 0.5rem 1rem; /* можно плавно добавить отступы */
+}

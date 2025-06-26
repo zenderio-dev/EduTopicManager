@@ -10,11 +10,14 @@ import ModalEditStudent from "../../Modals/ModalEditStudent/ModalEditStudent";
 import ModalDelete from "../../Modals/ModalDelete/ModalDelete";
 import ModalCreateStudent from "../../Modals/ModalCreateStudent/ModalCreateStudent";
 import ModalCreateUsersFromFile from "../../Modals/ModalCreateUsersFile/ModalCreateUsersFromFile";
-import { useAllStudentsQuery, useAllTeachersQuery } from "@/services/auth/userApi";
+import {
+  useAllStudentsQuery,
+  useAllTeachersQuery,
+} from "@/services/api/userApi";
 import Loader from "@/components/ui/Loader/Loader";
 import ModalCreateTeacher from "../../Modals/ModalCreateTeacher/ModalCreateTeacher";
 import ModalEditTeacher from "../../Modals/ModalEditTeacher/ModalEditTeacher";
-
+import { TeacherType } from "@/types/userTypes";
 
 const columns: ColumnDef<TeacherType>[] = [
   {
@@ -26,7 +29,11 @@ const columns: ColumnDef<TeacherType>[] = [
           {
             name: "Редактировать пользователя",
             modal: ({ isOpen, onClose }) => (
-              <ModalEditTeacher teacher={row.original} isOpen={isOpen} onClose={onClose} />
+              <ModalEditTeacher
+                teacher={row.original}
+                isOpen={isOpen}
+                onClose={onClose}
+              />
             ),
           },
           {

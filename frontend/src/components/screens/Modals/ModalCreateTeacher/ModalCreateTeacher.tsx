@@ -1,15 +1,14 @@
 "use client";
 import { useForm, useFormState } from "react-hook-form";
 
-import { useCreateAccountMutation } from "@/services/auth/userApi";
+import { useCreateAccountMutation } from "@/services/api/userApi";
 import CreateTeacherForm from "../CreateTeacherForm/CreateTeacherForm";
-
+import { RegisterTeacherType } from "@/types/userTypes";
 
 interface ModalDeleteProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
 
 const ModalCreateStudent = ({ isOpen, onClose }: ModalDeleteProps) => {
   const { control, handleSubmit, setError } = useForm<RegisterTeacherType>({
@@ -22,7 +21,6 @@ const ModalCreateStudent = ({ isOpen, onClose }: ModalDeleteProps) => {
       academicTitle: "",
       academicDegree: "",
       jobTitle: "",
-      
     },
   });
 
@@ -31,7 +29,7 @@ const ModalCreateStudent = ({ isOpen, onClose }: ModalDeleteProps) => {
   const [createAccount, { isLoading }] = useCreateAccountMutation();
 
   const onSubmit = async (formData: RegisterTeacherType) => {
-    console.log(formData)
+    console.log(formData);
     if (formData.password !== formData.re_password) {
       setError("re_password", {
         type: "validate",
@@ -44,12 +42,14 @@ const ModalCreateStudent = ({ isOpen, onClose }: ModalDeleteProps) => {
       await createAccount(formData).unwrap();
       onClose();
     } catch (err: any) {
-      console.log(err)
+      console.log(err);
       const apiErrors = err?.data ?? {};
-       Object.entries(apiErrors).forEach(([field, messages]) => {
+      Object.entries(apiErrors).forEach(([field, messages]) => {
         const message = Array.isArray(messages) ? messages[0] : messages;
         setError(
-          (field in formData ? field : "non_field_errors") as keyof RegisterTeacherType,
+          (field in formData
+            ? field
+            : "non_field_errors") as keyof RegisterTeacherType,
           { type: "server", message }
         );
       });

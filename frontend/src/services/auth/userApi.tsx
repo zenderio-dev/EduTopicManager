@@ -12,8 +12,8 @@ export const userApi = Api.injectEndpoints({
       }),
     }),
     CreateAccount: builder.mutation<
-      FullStudentType | FullTeacherType,
-      LoginType
+      StudentWithUsername,
+      RegisterStudentType | RegisterTeacherType
     >({
       query: (body) => ({
         url: "/users/",
@@ -35,12 +35,40 @@ export const userApi = Api.injectEndpoints({
       }),
       providesTags: ["Students"],
     }),
-     allTeachers: builder.query<StudentType[], void>({
+    allTeachers: builder.query<TeacherType[], void>({
       query: () => ({
         url: "/teachers/",
         method: "GET",
       }),
       providesTags: ["Teachers"],
+    }),
+    getAllInfoUser: builder.query<
+      TeacherWithUsername | StudentWithUsername,
+      number
+    >({
+      query: (id) => ({
+        url: `/users/${id}/`,
+        method: "GET",
+      }),
+      providesTags: ["Students", "Teachers"],
+    }),
+    deleteUser: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `/users/${id}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Students", "Teachers"],
+    }),
+    patchUser: builder.mutation<
+      TeacherWithUsername | StudentWithUsername,
+      { data: PatchStudentType | PatchTeacherType, id:number}
+    >({
+      query: ({id,data}) => ({
+        url: `/users/${id}/`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Students", "Teachers"],
     }),
   }),
 });
@@ -51,5 +79,8 @@ export const {
   useLazyMyAccountQuery,
   useAllStudentsQuery,
   useCreateAccountMutation,
-  useAllTeachersQuery
+  useAllTeachersQuery,
+  useGetAllInfoUserQuery,
+  useDeleteUserMutation,
+  usePatchUserMutation,
 } = userApi;

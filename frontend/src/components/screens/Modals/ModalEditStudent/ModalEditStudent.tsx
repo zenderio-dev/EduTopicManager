@@ -2,50 +2,82 @@
 import { useEffect } from "react";
 import { useForm, useFormState } from "react-hook-form";
 import CreateStudentForm from "../CreateStudentForm/CreateStudentForm";
-
+import { useGetAllInfoUserQuery, usePatchUserMutation } from "@/services/auth/userApi";
 
 interface ModalEditStudentProps {
   isOpen: boolean;
   onClose: () => void;
-  student: FullStudentType | null;
+  student: StudentType;
 }
 
-interface FormValues extends FullStudentType {
-  confirmPassword: string;
-}
+const ModalEditStudent = ({
+  isOpen,
+  onClose,
+  student,
+}: ModalEditStudentProps) => {
 
-const ModalEditStudent = ({ isOpen, onClose, student }: ModalEditStudentProps) => {
-  const { control, handleSubmit, reset } = useForm<FormValues>({
+
+  const [patchUser, { isLoading }] = usePatchUserMutation();
+  const {data:studentInfo, isLoading:isUserLoading} = useGetAllInfoUserQuery(student.user_id)
+
+
+  const { control, handleSubmit, reset, setError } = useForm<PatchStudentType>({
     defaultValues: {
       username: "",
       password: "",
-      confirmPassword: "",
-      fullName: "",
+      re_password: "",
+      fullname: "",
       group: "",
-      course: 1,
-      
+      role: "student",
+      course: 0,
     },
   });
 
-  const { errors } = useFormState<FormValues>({ control });
+  const { errors } = useFormState<PatchStudentType>({ control });
 
   useEffect(() => {
-    if (student) {
+    if (studentInfo && studentInfo.role === "student") {
       reset({
-        username: student.username,
+        username: studentInfo.username,
         password: "",
-        confirmPassword: "",
-        fullName: student.fullName,
-        role: student.role,
-        group: student.group,
-        course: student.course,
-        
+        re_password: "",
+        fullname: studentInfo.fullname,
+        role: studentInfo.role,
+        group: studentInfo.group,
+        course: studentInfo.course,
       });
     }
-  }, [student, reset]);
+  }, [studentInfo, reset]);
 
-  const onSubmit = (data: FormValues) => {
-    // send PUT/PATCH request here
+  const onSubmit = async (formData: PatchStudentType) => {
+    if (formData.password && formData.password !== formData.re_password) {
+      setError("re_password", {
+        type: "validate",
+        message: "Пароли не совпадают",
+      });
+      return;
+    }
+     const { password, re_password, ...rest } = formData;
+    const data = {
+      ...rest,
+      ...(password ? { password, re_password } : {}), // добавим только если пароль введён
+    };
+    try {
+      await patchUser({ data: data, id: student.user_id }).unwrap();
+      onClose();
+    } catch (err: any) {
+      console.log(err);
+      const apiErrors = err?.data ?? {};
+      Object.entries(apiErrors).forEach(([field, messages]) => {
+        const message = Array.isArray(messages) ? messages[0] : messages;
+        setError(
+          (field in formData
+            ? field
+            : "non_field_errors") as keyof PatchStudentType,
+          { type: "server", message }
+        );
+      });
+    }
   };
 
   return (
@@ -55,7 +87,8 @@ const ModalEditStudent = ({ isOpen, onClose, student }: ModalEditStudentProps) =
       errors={errors}
       control={control}
       onSubmit={handleSubmit(onSubmit)}
-      isLoading={false}
+      isLoading={isLoading}
+      isUserLoading={isUserLoading}
       isEdit={true}
     />
   );

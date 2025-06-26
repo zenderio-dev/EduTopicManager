@@ -18,11 +18,10 @@ const MyInputForm = forwardRef<HTMLInputElement, MyInputFormProps>(
           {label}
         </label>
         <input
+          autoComplete="new-password"
           id={inputId}
           ref={ref}
-          className={clsx(styles.input, className, {
-           
-          })}
+          className={clsx(styles.input, className, {})}
           {...props}
         />
         {error && <div className={styles.error}>{error}</div>}

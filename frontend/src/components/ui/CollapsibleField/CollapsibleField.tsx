@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import styles from "./CollapsibleField.module.scss";
+import clsx from "clsx";
 
 interface Props {
   name: string;
@@ -19,7 +20,7 @@ const CollapsibleField = ({ name, children, defaultOpen = false }: Props) => {
         className={styles.toggleBtn}
       >
         {name}
-        <span className={`${styles.arrow} ${isOpen ? styles.openArrow : ""}`} />
+        <div className={clsx(styles.arrow, {[styles.openArrow]:isOpen})} />
       </button>
 
       <div

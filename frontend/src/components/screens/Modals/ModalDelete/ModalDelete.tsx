@@ -3,6 +3,7 @@ import Modal from "@/components/Modal.tsx/Modal";
 import styles from "./ModalDelete.module.scss";
 import User from "@/components/User/User";
 import MyBtn from "@/components/ui/MyBtn/MyBtn";
+import { useDeleteUserMutation } from "@/services/auth/userApi";
 
 interface ModalDeleteProps {
   isOpen: boolean;
@@ -11,7 +12,9 @@ interface ModalDeleteProps {
 }
 
 const ModalDelete = ({ isOpen, onClose, user }: ModalDeleteProps) => {
-  function handleDelete(){
+  const [deleteAccount, {isLoading}]= useDeleteUserMutation()
+  async function handleDelete(){
+    await deleteAccount(user.user_id).unwrap()
     onClose()
   }
   return (
@@ -20,7 +23,7 @@ const ModalDelete = ({ isOpen, onClose, user }: ModalDeleteProps) => {
       (
         <div className={styles.btnContainer}>
           <MyBtn onClick={onClose}>Отмена</MyBtn>
-          <MyBtn onClick={handleDelete} className={styles.deleteBtn}>Удалить</MyBtn>
+          <MyBtn isLoading={isLoading} onClick={handleDelete} className={styles.deleteBtn}>Удалить</MyBtn>
         </div>
       )
     }

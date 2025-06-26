@@ -8,6 +8,7 @@ import {
   type ColumnDef,
 } from "@tanstack/react-table";
 
+
 type TableProps<T> = {
   columns: ColumnDef<T>[];
   data: T[];

@@ -14,21 +14,23 @@ interface Props {
   onClose: () => void;
   isLoading: boolean;
   isEdit?: boolean;
+  isUserLoading?: boolean;
 }
 
-const courseOptions = [{ name: 1 }, { name: 2 }, { name: 3 }, { name: 4 }];
 
 const CreateStudentForm = ({
   control,
   errors,
   onSubmit,
   isOpen,
+  isUserLoading = false,
   onClose,
   isLoading,
   isEdit,
 }: Props) => {
   return (
     <Modal
+      isLoading={isUserLoading}
       className={styles.modal}
       isOpen={isOpen}
       onClose={onClose}

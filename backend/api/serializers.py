@@ -140,7 +140,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class StudentProfileSerializer(serializers.ModelSerializer):
     fullname = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
-    group = serializers.CharField(source='group')
+    group = serializers.CharField()
 
     class Meta:
         model = StudentProfile

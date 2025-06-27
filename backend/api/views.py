@@ -16,7 +16,6 @@ from .serializers import (
 from .permissions import IsAdminUserRole, IsTeacherUserRole, IsStudentUserRole, IsSelfOrAdmin
 from .filters import TopicFilter
 
-# --- USER ---
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     permission_classes = [IsAdminUserRole]
@@ -157,19 +156,16 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response({'created': created_users}, status=201)
 
 
-# --- STUDENT PROFILE ---
 class StudentProfileViewSet(viewsets.ModelViewSet):
     queryset = StudentProfile.objects.all()
     serializer_class = StudentProfileSerializer
     permission_classes = [IsStudentUserRole | IsAdminUserRole]
 
-# --- TEACHER PROFILE ---
 class TeacherProfileViewSet(viewsets.ModelViewSet):
     queryset = TeacherProfile.objects.all()
     serializer_class = TeacherProfileSerializer
     permission_classes = [IsTeacherUserRole | IsAdminUserRole]
 
-# --- TOPIC ---
 class TopicViewSet(viewsets.ModelViewSet):
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
@@ -275,7 +271,6 @@ class TopicViewSet(viewsets.ModelViewSet):
 
         return Response(results)
 
-# --- STUDENT TOPIC CHOICE ---
 class StudentTopicChoiceViewSet(viewsets.ModelViewSet):
     queryset = StudentTopicChoice.objects.all()
     permission_classes = [IsStudentUserRole | IsTeacherUserRole | IsAdminUserRole]

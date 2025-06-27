@@ -2,7 +2,6 @@ from rest_framework import serializers
 from users.models import User, StudentProfile, TeacherProfile
 from topics.models import Topic, StudentTopicChoice
 
-# --- USER SERIALIZERS ---
 class UserSerializer(serializers.ModelSerializer):
     fullname = serializers.SerializerMethodField()
 
@@ -153,7 +152,6 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     def get_role(self, obj):
         return obj.user.role
 
-# --- TOPIC SERIALIZER ---
 class TopicSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
     class Meta:
@@ -162,12 +160,11 @@ class TopicSerializer(serializers.ModelSerializer):
         read_only_fields = ['teacher']
 
     def get_status(self, obj):
-        choice = obj.choices.first()  # через related_name
+        choice = obj.choices.first()
         if choice:
             return "подтверждено" if choice.confirmed_by_teacher else "ожидает подтверждения"
         return "ожидается студент"
 
-# --- STUDENT TOPIC CHOICE SERIALIZER ---
 class StudentTopicChoiceSerializer(serializers.ModelSerializer):
     student = StudentProfileSerializer()
     topic = TopicSerializer()
@@ -189,14 +186,12 @@ class StudentTopicChoiceWriteSerializer(serializers.ModelSerializer):
         request = self.context['request']
         user = request.user
 
-        # Если студент выбирает тему
         if request.method == 'POST':
             if not hasattr(user, 'student_profile'):
                 raise serializers.ValidationError("Пользователь не является студентом.")
             student = user.student_profile
             topic = data['topic']
 
-            # Проверка типа работы по курсу
             if student.course == 1:
                 allowed_types = ['coursework', 'both']
             elif student.course >= 4:
@@ -210,7 +205,6 @@ class StudentTopicChoiceWriteSerializer(serializers.ModelSerializer):
             if StudentTopicChoice.objects.filter(topic=topic).exists():
                 raise serializers.ValidationError("Эта тема уже выбрана другим студентом.")
 
-        # Преподаватель подтверждает
         if 'confirmed_by_teacher' in data:
             if not hasattr(user, 'teacher_profile'):
                 raise serializers.ValidationError("Подтвердить тему может только преподаватель.")
@@ -224,7 +218,6 @@ class StudentTopicChoiceWriteSerializer(serializers.ModelSerializer):
         return StudentTopicChoice.objects.create(student=student, topic=topic)
 
     def update(self, instance, validated_data):
-        # Подтверждение преподавателем
         if 'confirmed_by_teacher' in validated_data:
             instance.confirmed_by_teacher = validated_data['confirmed_by_teacher']
             instance.save()
@@ -235,7 +228,6 @@ class StudentTopicChoiceWriteSerializer(serializers.ModelSerializer):
         student = self.context['request'].user.student_profile
         topic = validated_data['topic']
 
-        # Удалим предыдущий выбор, если был
         StudentTopicChoice.objects.filter(student=student).delete()
 
         return StudentTopicChoice.objects.create(student=student, topic=topic)
@@ -273,7 +265,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     def validate(self, data):
         role = data.get('role', self.instance.role)
 
-        # Проверка пароля (если меняется)
         if 'password' in data or 're_password' in data:
             if data.get('password') != data.get('re_password'):
                 raise serializers.ValidationError({'re_password': 'Пароли не совпадают.'})
@@ -282,14 +273,12 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             if not (request_user.is_superuser or request_user.role == 'admin'):
                 raise serializers.ValidationError({'password': 'Изменять пароль может только администратор.'})
 
-        # Проверка fullname (если передан)
         fullname = data.get('fullname')
         if fullname:
             parts = fullname.strip().split()
             if len(parts) < 2:
                 raise serializers.ValidationError({'fullname': 'Укажите Фамилию и Имя (обязательно) и Отчество (по желанию).'})
 
-        # Роль-зависимая валидация
         if role == 'student':
             if 'course' in data and not isinstance(data['course'], int):
                 raise serializers.ValidationError({'course': 'Курс должен быть целым числом.'})
@@ -304,7 +293,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         return data
 
     def update(self, instance, validated_data):
-        # Обновляем ФИО, если есть
         fullname = validated_data.pop('fullname', None)
         if fullname:
             parts = fullname.strip().split()
@@ -317,13 +305,11 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         instance.role = validated_data.get('role', instance.role)
         instance.save()
 
-        # Обновляем пароль, если есть
         password = validated_data.get('password')
         if password:
             instance.set_password(password)
             instance.save()
 
-        # Обновляем профили, если есть нужные поля
         if instance.role == 'student':
             profile, _ = StudentProfile.objects.get_or_create(user=instance)
             if 'course' in validated_data:
@@ -347,7 +333,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
 
-        # Добавим данные профиля
         if instance.role == 'student' and hasattr(instance, 'student_profile'):
             rep['course'] = instance.student_profile.course
             rep['group'] = instance.student_profile.group
